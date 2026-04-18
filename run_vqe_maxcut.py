@@ -16,11 +16,11 @@ class MetriplecticMaxCut:
         self.modulated_edges = []
         for i, (u, v, weight) in enumerate(self.edges):
             n = i + 1  # non-zero index
-            O_n = np.cos(np.pi * n) * np.cos(np.pi * self.phi * n)
+            O_n = float(np.cos(np.pi * n) * np.cos(np.pi * self.phi * n))
             # Ensure the vacuum is never zero or flat (Regla 2.1)
             if abs(O_n) < 1e-5:
                 O_n = 1e-5 
-            self.modulated_edges.append((u, v, weight * O_n))
+            self.modulated_edges.append((int(u), int(v), float(weight * O_n)))
             
     def compute_lagrangian(self, psi, rho, v):
         """
