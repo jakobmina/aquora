@@ -1,0 +1,29 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environments
+env/
+venv/
+.env
+
+# Testing / Pytest
+.pytest_cache/
+pytest_out.txt
+
+# Security / Credentials
+# CRITICAL: Never commit the credentials!
+credentials.json
+*.pem
+*.key
+
+# Generated outputs / Visualizations
+metriplectic_dynamics.png
+
+# Jupyter Notebooks (if used later)
+.ipynb_checkpoints/
+
+# OS generated files
+.DS_Store
+Thumbs.db

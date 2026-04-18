@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>smokApp Q-Lab — H7 QNN Experiment</title>
+    <link rel="stylesheet" href="/static/index.css">
+</head>
+<body>
+    <header class="app-header">
+        <div class="title">
+            <span class="play-icon">▶</span> smokApp Q-Lab — <span class="subtitle">H7 QNN Experiment v0.1</span>
+        </div>
+        <div class="controls">
+            <button id="btn-roll" class="btn"><span class="icon">▶</span> tirar dado Z₇</button>
+            <button id="btn-epoch" class="btn"><span class="icon">↻</span> epoch completo</button>
+            <button id="btn-auto" class="btn"><span class="icon text-yellow">⚡</span> auto x10</button>
+            <button id="btn-reset" class="btn"><span class="icon">⟲</span> reset</button>
+        </div>
+    </header>
+
+    <main class="dashboard">
+        <section class="panel stochastic-input">
+            <h2>ENTRADA ESTOCÁSTICA</h2>
+            <div class="content">
+                <div class="dice-box">-</div>
+                <div class="endianness-info">
+                    <div class="big-endian">big endian: <span class="value yellow">???</span></div>
+                    <div class="little-endian">little endian: <span class="value blue">???</span></div>
+                    <div class="sum">suma = 7 → 111₂</div>
+                </div>
+                <div class="dice-box">-</div>
+            </div>
+            <div class="footer-text">par antagónico (n, 7-n) en Z₇</div>
+        </section>
+
+        <section class="panel on-master">
+            <h2>O_N MASTER</h2>
+            <div class="master-value" id="val-golden">0.3624</div>
+            <div class="badge">COHERENTE</div>
+            <div class="progress-container">
+                <div class="label">deriva acumulada <span id="val-drift" class="float-right">0.0000</span></div>
+                <div class="progress-bar"><div class="fill" id="bar-drift" style="width: 0%;"></div></div>
+            </div>
+            <div class="progress-container">
+                <div class="label">epoch <span id="val-epoch" class="float-right">0 / —</span></div>
+                <div class="progress-bar"><div class="fill" id="bar-epoch" style="width: 0%;"></div></div>
+            </div>
+        </section>
+
+        <section class="panel mahalanobis-euler">
+            <h2>▶ distancia dual Mahalanobis—Euler</h2>
+            <div class="metrics-list">
+                <div class="metric-row">
+                    <span>D_mah(n)</span>
+                    <div class="bar-bg"><div class="bar-fill" style="width: 20%;"></div></div>
+                    <span>—</span>
+                </div>
+                <div class="metric-row">
+                    <span>D_mah(7-n)</span>
+                    <div class="bar-bg"><div class="bar-fill" style="width: 40%;"></div></div>
+                    <span>—</span>
+                </div>
+                <div class="metric-row">
+                    <span>D_euc(n)</span>
+                    <div class="bar-bg"><div class="bar-fill" style="width: 30%;"></div></div>
+                    <span>—</span>
+                </div>
+                <div class="metric-row">
+                    <span>D_euc(7-n)</span>
+                    <div class="bar-bg"><div class="bar-fill" style="width: 50%;"></div></div>
+                    <span>—</span>
+                </div>
+                <hr>
+                <div class="metric-row">
+                    <span>ΔD (empuje)</span>
+                    <div class="bar-bg"><div class="bar-fill yellow" id="bar-empuje" style="width: 0%;"></div></div>
+                    <span>—</span>
+                </div>
+                <div class="metric-row">
+                    <span>DRIFT_072</span>
+                    <div class="bar-bg"><div class="bar-fill orange" id="bar-drift-072" style="width: 0%;"></div></div>
+                    <span class="orange" id="val-drift-072">-0.7168</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="panel cortical-layers">
+            <h2>▶ capas corticales — O_n por frecuencia</h2>
+            <div class="cards">
+                <div class="card">
+                    <div class="freq">~250kHz</div>
+                    <div class="val">0.3624</div>
+                    <div class="desc">reflejo</div>
+                </div>
+                <div class="card">
+                    <div class="freq">~100kHz</div>
+                    <div class="val">0.3624</div>
+                    <div class="desc">patrón</div>
+                </div>
+                <div class="card">
+                    <div class="freq">~10kHz</div>
+                    <div class="val">0.3624</div>
+                    <div class="desc">track H7</div>
+                </div>
+                <div class="card">
+                    <div class="freq">~100Hz</div>
+                    <div class="val">0.3624</div>
+                    <div class="desc">Gemma 4</div>
+                </div>
+            </div>
+            
+            <h2 class="mt">MONITOR GEMMA 4 — CAPA LENTA</h2>
+            <div class="gemma-monitor">
+                aguardando datos de epoch...
+            </div>
+        </section>
+
+        <section class="panel global-metrics">
+            <h2>▶ métricas globales</h2>
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="val blue" id="global-epochs">0</div>
+                    <div class="desc">epochs</div>
+                </div>
+                <div class="metric-box">
+                    <div class="val yellow" id="global-entropy">0.000</div>
+                    <div class="desc">kT·ln2 acumulado</div>
+                </div>
+                <div class="metric-box">
+                    <div class="val cyan" id="global-coherence">100%</div>
+                    <div class="desc">coherencia</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="panel system-log">
+            <h2>LOG DEL SISTEMA</h2>
+            <div class="log-container" id="log-container">
+                <div class="log-entry">[INIT] H7 QNN v0.1 — API initialized</div>
+            </div>
+        </section>
+    </main>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
