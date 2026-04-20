@@ -329,6 +329,17 @@ class TestVisualization:
 # END-TO-END  run_maxcut()
 # ────────────────────────────────────────────────────────────
 
+# Required CSV columns — canonical submission schema
+REQUIRED_CSV_KEYS = {
+    "run_id", "timestamp", "n_param", "phi_param", "phi_golden",
+    "particle_type", "golden", "quasiperiod",
+    "L_symp", "L_metr",
+    "symmetry_ratio", "h7_state",
+    "vqe_energy", "vqe_status",
+    "n_edges", "on_weights",
+}
+
+
 class TestRunMaxcut:
     def test_returns_dict(self, tmp_path, monkeypatch):
         monkeypatch.chdir(tmp_path)
@@ -340,3 +351,139 @@ class TestRunMaxcut:
         custom_edges = [(0, 1, 0.5), (1, 2, 0.5)]
         result = run_maxcut(edges=custom_edges, n_param=2, phi_param=0.5)
         assert isinstance(result, dict)
+
+    def test_record_contains_all_keys(self, tmp_path, monkeypatch):
+        """run_maxcut() must return all canonical submission fields."""
+        monkeypatch.chdir(tmp_path)
+        record = run_maxcut()
+        missing = REQUIRED_CSV_KEYS - set(record.keys())
+        assert not missing, f"Missing keys in record: {missing}"
+
+    def test_export_csv_flag_creates_file(self, tmp_path, monkeypatch):
+        """run_maxcut(export_csv=True) must produce a submission CSV."""
+        monkeypatch.chdir(tmp_path)
+        csv_file = tmp_path / "submission.csv"
+        run_maxcut(export_csv=True, csv_path=str(csv_file))
+        assert csv_file.exists(), "submission.csv was not created"
+
+    def test_export_csv_appends_across_runs(self, tmp_path, monkeypatch):
+        """Two runs with export_csv=True must produce 2 rows in the CSV."""
+        monkeypatch.chdir(tmp_path)
+        csv_file = str(tmp_path / "submission.csv")
+        run_maxcut(n_param=1, phi_param=0.3624, export_csv=True, csv_path=csv_file)
+        run_maxcut(n_param=2, phi_param=0.3624, export_csv=True, csv_path=csv_file)
+
+        import csv as _csv
+        with open(csv_file, newline="", encoding="utf-8") as fh:
+            rows = list(_csv.DictReader(fh))
+        assert len(rows) == 2, f"Expected 2 rows, got {len(rows)}"
+
+
+# ────────────────────────────────────────────────────────────
+# CSV EXPORT  (export_submission_csv)
+# ────────────────────────────────────────────────────────────
+
+class TestCSVExport:
+    @pytest.fixture
+    def sample_records(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        r1 = run_maxcut(n_param=1, phi_param=0.3624)
+        r2 = run_maxcut(n_param=3, phi_param=0.6180)
+        return [r1, r2]
+
+    def test_csv_file_created(self, system, sample_records, tmp_path):
+        out = str(tmp_path / "test_submission.csv")
+        system.export_submission_csv(sample_records, out)
+        assert os.path.exists(out)
+
+    def test_csv_row_count(self, system, sample_records, tmp_path):
+        out = str(tmp_path / "test_submission.csv")
+        system.export_submission_csv(sample_records, out)
+        import csv as _csv
+        with open(out, newline="", encoding="utf-8") as fh:
+            rows = list(_csv.DictReader(fh))
+        assert len(rows) == len(sample_records)
+
+    def test_csv_header_columns(self, system, sample_records, tmp_path):
+        """CSV must contain all canonical submission columns."""
+        out = str(tmp_path / "test_submission.csv")
+        system.export_submission_csv(sample_records, out)
+        import csv as _csv
+        with open(out, newline="", encoding="utf-8") as fh:
+            reader = _csv.DictReader(fh)
+            header = set(reader.fieldnames or [])
+        missing = REQUIRED_CSV_KEYS - header
+        assert not missing, f"Missing CSV columns: {missing}"
+
+    def test_csv_values_are_physical(self, system, sample_records, tmp_path):
+        """Numeric fields must be finite and within physical bounds."""
+        out = str(tmp_path / "test_submission.csv")
+        system.export_submission_csv(sample_records, out)
+        import csv as _csv
+        with open(out, newline="", encoding="utf-8") as fh:
+            rows = list(_csv.DictReader(fh))
+        for row in rows:
+            sym_ratio = float(row["symmetry_ratio"])
+            assert 0.0 <= sym_ratio <= 1.0, f"symmetry_ratio out of [0,1]: {sym_ratio}"
+            assert row["particle_type"] in {"fermionic", "bosonic", "unknown"}
+            assert row["h7_state"] in {"CONSTRUCTIVE", "EQUILIBRIUM", "DESTRUCTIVE"}
+
+    def test_csv_on_weights_pipe_separated(self, system, sample_records, tmp_path):
+        """on_weights field must be a pipe-separated float string."""
+        out = str(tmp_path / "test_submission.csv")
+        system.export_submission_csv(sample_records, out)
+        import csv as _csv
+        with open(out, newline="", encoding="utf-8") as fh:
+            rows = list(_csv.DictReader(fh))
+        for row in rows:
+            weights = [float(w) for w in row["on_weights"].split("|")]
+            assert len(weights) > 0
+            assert all(abs(w) >= 1e-5 for w in weights), "Flat vacuum in exported weights"
+
+    def test_empty_records_raises(self, system):
+        """export_submission_csv([]) must raise ValueError."""
+        with pytest.raises(ValueError, match="empty"):
+            system.export_submission_csv([])
+
+    def test_csv_n_param_matches_input(self, system, tmp_path, monkeypatch):
+        """n_param in CSV row must match what was passed to run_maxcut."""
+        monkeypatch.chdir(tmp_path)
+        rec = run_maxcut(n_param=7, phi_param=0.3624)
+        out = str(tmp_path / "test_n_param.csv")
+        system.export_submission_csv([rec], out)
+        import csv as _csv
+        with open(out, newline="", encoding="utf-8") as fh:
+            row = next(_csv.DictReader(fh))
+        assert float(row["n_param"]) == pytest.approx(7.0)
+
+
+# ────────────────────────────────────────────────────────────
+# BATCH GENERATOR  (generate_submission.py)
+# ────────────────────────────────────────────────────────────
+
+class TestGenerateSubmission:
+    def test_run_grid_returns_records(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        from generate_submission import run_grid
+        grid = [(1, 0.3624), (2, 0.6180)]
+        records = run_grid(grid=grid, output_path=str(tmp_path / "batch.csv"))
+        assert len(records) == 2
+
+    def test_run_grid_creates_csv(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        from generate_submission import run_grid
+        out = tmp_path / "batch.csv"
+        run_grid(grid=[(1, 0.3624)], output_path=str(out))
+        assert out.exists()
+
+    def test_run_grid_all_keys_present(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        from generate_submission import run_grid
+        records = run_grid(
+            grid=[(1, 0.3624)],
+            output_path=str(tmp_path / "batch.csv"),
+            verbose=False,
+        )
+        missing = REQUIRED_CSV_KEYS - set(records[0].keys())
+        assert not missing, f"Missing keys: {missing}"
+

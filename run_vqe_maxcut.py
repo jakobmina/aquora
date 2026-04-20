@@ -15,6 +15,8 @@ Physics Mandate (El Mandato Metriplético):
 Autoría Conceptual Original: Jacobo Tlacaelel Mina Rodriguez.
 """
 
+import csv
+import datetime
 import math
 import numpy as np
 import matplotlib.pyplot as plt
@@ -225,6 +227,7 @@ class MetriplecticMaxCut:
             "EQUILIBRIUM"
         )
         print(f"\n  Symmetry ratio : {symmetry_ratio:.2f}  →  {state}")
+        return symmetry_ratio, state, probs_LE
 
     # ----------------------------------------- Regla 3.3 — visualization -----
     def visualize_dynamics(self, steps: int = 50) -> None:
@@ -298,6 +301,59 @@ class MetriplecticMaxCut:
         print("  Dynamics saved → metriplectic_dynamics.png")
 
     # --------------------------------------------------- full pipeline --------
+    def export_submission_csv(
+        self,
+        records: list,
+        output_path: str = "submission.csv",
+    ) -> str:
+        """
+        Serialize one or multiple run records to a CSV for submission.
+
+        Each record is the dict returned by run().  Multiple runs can be
+        accumulated and exported together for batch benchmarking.
+
+        Parameters
+        ----------
+        records     : list of dicts from run()
+        output_path : destination file (default: submission.csv)
+
+        Returns
+        -------
+        Absolute path of the written file.
+        """
+        if not records:
+            raise ValueError("records list is empty — nothing to export.")
+
+        # Canonical column order (submission-ready)
+        fieldnames = [
+            "run_id",
+            "timestamp",
+            "n_param",
+            "phi_param",
+            "phi_golden",
+            "particle_type",
+            "golden",
+            "quasiperiod",
+            "L_symp",
+            "L_metr",
+            "symmetry_ratio",
+            "h7_state",
+            "vqe_energy",
+            "vqe_status",
+            "n_edges",
+            "on_weights",          # serialized list of O_n-modulated weights
+        ]
+
+        with open(output_path, "w", newline="", encoding="utf-8") as fh:
+            writer = csv.DictWriter(fh, fieldnames=fieldnames, extrasaction="ignore")
+            writer.writeheader()
+            for rec in records:
+                writer.writerow(rec)
+
+        print(f"\n  CSV submission written → {output_path}  ({len(records)} row(s))")
+        return output_path
+
+    # --------------------------------------------------- full pipeline --------
     def run(self) -> dict:
         """
         Execute the complete Metriplectic Virtual Particle pipeline:
@@ -307,6 +363,7 @@ class MetriplecticMaxCut:
           3. Run VQE on q3as (or mock)
           4. Analyse H7 virtual particles
           5. Render diagnostic visualization (Regla 3.3)
+          6. Compile and return a rich physics record dict
         """
         print("=" * 60)
         print("  METRIPLECTIC VIRTUAL PARTICLE PIPELINE — Q3AS")
@@ -319,15 +376,44 @@ class MetriplecticMaxCut:
         edges = self.build_graph()
 
         # 3. VQE on quantum backend
-        result = self.run_hardware()
+        hw_result = self.run_hardware()
 
-        # 4. Virtual particle analysis
-        self.analyze_virtual_particles(result, ptype)
+        # 4. Virtual particle analysis (now returns metrics)
+        symmetry_ratio, h7_state, _ = self.analyze_virtual_particles(hw_result, ptype)
 
         # 5. Metriplectic diagnostic visualization
         self.visualize_dynamics()
 
-        return result
+        # 6. Compute a representative Lagrangian snapshot
+        psi_snap = np.array([abs(w) for _, _, w in self.modulated_edges])
+        v_snap   = np.ones(len(self.edges)) * 0.1
+        L_symp, L_metr = self.compute_lagrangian(psi_snap, 1.0, v_snap)
+
+        # Compile the full physics record
+        record = {
+            "run_id"         : datetime.datetime.utcnow().strftime("%Y%m%dT%H%M%SZ"),
+            "timestamp"      : datetime.datetime.utcnow().isoformat() + "Z",
+            "n_param"        : self.n_param,
+            "phi_param"      : self.phi_param,
+            "phi_golden"     : self.phi,
+            "particle_type"  : ptype,
+            "golden"         : round(golden,      8),
+            "quasiperiod"    : round(quasiperiod, 8),
+            "L_symp"         : round(L_symp,      8),
+            "L_metr"         : round(L_metr,      8),
+            "symmetry_ratio" : round(symmetry_ratio, 4),
+            "h7_state"       : h7_state,
+            "vqe_energy"     : hw_result.get("energy", ""),
+            "vqe_status"     : hw_result.get("status", "submitted"),
+            "n_edges"        : len(self.edges),
+            "on_weights"     : "|".join(f"{w:.6f}" for _, _, w in self.modulated_edges),
+        }
+
+        print(f"\n{'='*60}")
+        print(f"  Run record compiled  →  h7_state={h7_state}  "
+              f"L_symp={L_symp:.4f}  L_metr={L_metr:.4f}")
+
+        return record
 
 
 # ============================================================
@@ -339,10 +425,20 @@ def run_maxcut(
     n_param: float = 3.0,
     phi_param: float = 0.3624,
     credentials_path: str = "credentials.json",
+    export_csv: bool = False,
+    csv_path: str = "submission.csv",
 ) -> dict:
     """
     Default MaxCut run using the H7 Hamiltonian edge set.
-    Edge weights are taken directly from the VQE Hamiltonian decomposition.
+
+    Parameters
+    ----------
+    edges           : custom edge list (default: H7 Hamiltonian 3-edge set)
+    n_param         : O_n parity parameter
+    phi_param       : O_n quasiperiod parameter
+    credentials_path: path to q3as credentials JSON
+    export_csv      : if True, append result to csv_path
+    csv_path        : submission CSV output path
     """
     if edges is None:
         edges = [
@@ -357,7 +453,21 @@ def run_maxcut(
         phi_param        = phi_param,
         credentials_path = credentials_path,
     )
-    return system.run()
+    record = system.run()
+
+    if export_csv:
+        # Append-safe: read existing rows, add new one, rewrite
+        existing: list = []
+        try:
+            with open(csv_path, newline="", encoding="utf-8") as fh:
+                reader = csv.DictReader(fh)
+                existing = list(reader)
+        except FileNotFoundError:
+            pass
+        existing.append(record)
+        system.export_submission_csv(existing, csv_path)
+
+    return record
 
 
 # ============================================================
@@ -365,4 +475,4 @@ def run_maxcut(
 # ============================================================
 
 if __name__ == "__main__":
-    run_maxcut(n_param=3, phi_param=0.3624)
+    run_maxcut(n_param=3, phi_param=0.3624, export_csv=True)
