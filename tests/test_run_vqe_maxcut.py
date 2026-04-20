@@ -333,7 +333,11 @@ class TestVisualization:
 REQUIRED_CSV_KEYS = {
     "run_id", "timestamp", "n_param", "phi_param", "phi_golden",
     "particle_type", "golden", "quasiperiod",
+    # Graph Lagrangian (O_n space)
     "L_symp", "L_metr",
+    # Quaternion Lagrangian (H7 amplitude space)
+    "q_L_symp", "q_L_metr", "chirality", "is_non_abelian", "norm_qLE", "norm_qBE",
+    # H7 classification
     "symmetry_ratio", "h7_state",
     "vqe_energy", "vqe_status",
     "n_edges", "on_weights",

@@ -20,6 +20,11 @@ import datetime
 import math
 import numpy as np
 import matplotlib.pyplot as plt
+from h7_quaternion import (
+    H7QuaternionMapper,
+    H7_AMPLITUDES,
+    compute_lagrangian_quaternion,
+)
 
 try:
     from q3as import Client, Credentials, VQE
@@ -227,7 +232,13 @@ class MetriplecticMaxCut:
             "EQUILIBRIUM"
         )
         print(f"\n  Symmetry ratio : {symmetry_ratio:.2f}  →  {state}")
-        return symmetry_ratio, state, probs_LE
+
+        # ── H7 → Quaternion (Metriplectic) ──────────────────────────────────
+        mapper = H7QuaternionMapper(H7_AMPLITUDES)
+        quat_report = mapper.analyze()
+        mapper.print_report(quat_report)
+
+        return symmetry_ratio, state, probs_LE, quat_report
 
     # ----------------------------------------- Regla 3.3 — visualization -----
     def visualize_dynamics(self, steps: int = 50) -> None:
@@ -334,14 +345,23 @@ class MetriplecticMaxCut:
             "particle_type",
             "golden",
             "quasiperiod",
+            # Graph Lagrangian (O_n space)
             "L_symp",
             "L_metr",
+            # Quaternion Lagrangian (H7 amplitude space)
+            "q_L_symp",
+            "q_L_metr",
+            "chirality",
+            "is_non_abelian",
+            "norm_qLE",
+            "norm_qBE",
+            # H7 classification
             "symmetry_ratio",
             "h7_state",
             "vqe_energy",
             "vqe_status",
             "n_edges",
-            "on_weights",          # serialized list of O_n-modulated weights
+            "on_weights",          # O_n-modulated weights (pipe-separated)
         ]
 
         with open(output_path, "w", newline="", encoding="utf-8") as fh:
@@ -379,15 +399,20 @@ class MetriplecticMaxCut:
         hw_result = self.run_hardware()
 
         # 4. Virtual particle analysis (now returns metrics)
-        symmetry_ratio, h7_state, _ = self.analyze_virtual_particles(hw_result, ptype)
+        symmetry_ratio, h7_state, _, quat_report = self.analyze_virtual_particles(hw_result, ptype)
 
         # 5. Metriplectic diagnostic visualization
         self.visualize_dynamics()
 
-        # 6. Compute a representative Lagrangian snapshot
+        # 6. Compute a representative Lagrangian snapshot (graph brackets)
         psi_snap = np.array([abs(w) for _, _, w in self.modulated_edges])
         v_snap   = np.ones(len(self.edges)) * 0.1
         L_symp, L_metr = self.compute_lagrangian(psi_snap, 1.0, v_snap)
+
+        # 7. Quaternion Lagrangian (commutator / anti-commutator brackets)
+        q_L_symp = quat_report["L_symp"]   # ‖[q_LE, q_BE]‖  {u,H}
+        q_L_metr = quat_report["L_metr"]   # ‖{q_LE, q_BE}‖  [u,S]
+        chirality = quat_report["chirality"]
 
         # Compile the full physics record
         record = {
@@ -399,8 +424,17 @@ class MetriplecticMaxCut:
             "particle_type"  : ptype,
             "golden"         : round(golden,      8),
             "quasiperiod"    : round(quasiperiod, 8),
+            # Graph Lagrangian (O_n space)
             "L_symp"         : round(L_symp,      8),
             "L_metr"         : round(L_metr,      8),
+            # Quaternion Lagrangian (H7 amplitude space)
+            "q_L_symp"       : round(q_L_symp,    8),
+            "q_L_metr"       : round(q_L_metr,    8),
+            "chirality"      : round(chirality,   8),
+            "is_non_abelian" : quat_report["is_non_abelian"],
+            "norm_qLE"       : round(quat_report["norm_LE"], 8),
+            "norm_qBE"       : round(quat_report["norm_BE"], 8),
+            # H7 state
             "symmetry_ratio" : round(symmetry_ratio, 4),
             "h7_state"       : h7_state,
             "vqe_energy"     : hw_result.get("energy", ""),
