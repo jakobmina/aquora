@@ -56,8 +56,8 @@ H7_EDGES = [
 def run_grid(
     grid: list = DEFAULT_GRID,
     edges: list = H7_EDGES,
-    output_path: str = "submission.csv",
-    credentials_path: str = "credentials.json",
+    output_path: str = "/home/jako/aquora/submission.csv",
+    credentials_path: str = "/home/jako/aquora/credentials.json",
     verbose: bool = True,
 ) -> list:
     """
@@ -126,8 +126,8 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    records = run_grid(
+    csv_results = run_grid(
         output_path      = args.out,
         credentials_path = args.credentials,
     )
-    print_summary(records)
+    print_summary(csv_results)

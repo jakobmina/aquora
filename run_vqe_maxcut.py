@@ -437,8 +437,8 @@ class MetriplecticMaxCut:
             # H7 state
             "symmetry_ratio" : round(symmetry_ratio, 4),
             "h7_state"       : h7_state,
-            "vqe_energy"     : hw_result.get("energy", ""),
-            "vqe_status"     : hw_result.get("status", "submitted"),
+            "vqe_energy"     : getattr(hw_result, "energy", hw_result.get("energy", "")) if not isinstance(hw_result, dict) else hw_result.get("energy", ""),
+            "vqe_status"     : getattr(hw_result, "status", hw_result.get("status", "submitted")) if not isinstance(hw_result, dict) else hw_result.get("status", "submitted"),
             "n_edges"        : len(self.edges),
             "on_weights"     : "|".join(f"{w:.6f}" for _, _, w in self.modulated_edges),
         }
