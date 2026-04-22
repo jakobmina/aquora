@@ -1,46 +1,70 @@
-# H7 Metriplectic VQE MaxCut
+# 🌌 H7 Metriplectic VQE: The Quantum-Topological Bridge
 
-Este repositorio contiene la implementación de un optimizador cuántico (VQE para el problema de MaxCut) adaptado estrictamente al **Mandato Metriplético (Core Physics)** del framework H7. 
+![Metriplectic Dynamics](metriplectic_dynamics.png)
 
-El código sirve como un puente entre la lógica cuántica abstracta y los principios dinámicos fundamentales, asegurando un mapeo riguroso de Nivel 3 (Isomorfismo Físico Operacional).
+Este repositorio constituye la implementación avanzada del framework **Metriplectic H7**, un motor de optimización cuántica (VQE para MaxCut) diseñado bajo el **Mandato Metriplético (Core Physics)**. El sistema trasciende la optimización convencional, tratando la convergencia del algoritmo como la evolución de un sistema dinámico disipativo en un vacío estructurado.
 
-## 🌌 Principios Físicos Implementados
+## 🧠 Arquitectura de Física Teórica (Core Physics)
 
-1. **Componentes Ortogonales (Regla 1.1 y 1.2)**: 
-   El sistema se evalúa dinámicamente mediante el cálculo explícito del Lagrangiano (`compute_lagrangian`), separando la energía conservativa (`L_symp`, el Hamiltoniano derivado del problema MaxCut) de la relajación disipativa (`L_metr`, modelando la convergencia del optimizador).
-   
-2. **Topología del Espacio-Tiempo Áureo (Regla 2.1)**:
-   El "vacío" de los datos nunca es plano. Los pesos del grafo se modulan utilizando el Operador Áureo $O_n = \cos(\pi n) \cos(\pi \phi n)$, inyectando la razón áurea ($\phi$) directamente en la topología del problema.
+El sistema cumple con el **Manifiesto de la Analogía Rigurosa (Nivel 3)**, asegurando que cada operación matemática tenga una contraparte física operacional.
 
-3. **Visualización Diagnóstica (Regla 3.3)**:
-   No basta con el resultado final. El script genera un diagnóstico visual en tiempo real (`metriplectic_dynamics.png`) de la competencia entre las fuerzas conservativas y disipativas durante el proceso de relajación/optimización.
+### 1. El Dualismo Metriplético (Reglas 1.1 - 1.3)
 
-## 🚀 Instalación y Uso
+Cualquier simulación se define mediante dos corchetes ortogonales que compiten en tiempo real:
 
-### Prerrequisitos
-- Entorno Python 3.x
-- Bibliotecas necesarias: `numpy`, `matplotlib`, `pytest`, `q3as`
+* **Componente Simpléctica ($\mathcal{L}_{symp}$)**: Genera movimiento conservativo (Hamiltoniano). Representa la estructura del problema MaxCut.
+* **Componente Métrica ($\mathcal{L}_{metr}$)**: Genera relajación hacia un atractor (Entropía). Representa la disipación necesaria para la convergencia del optimizador.
+* **Prohibición de Singularidades**: El sistema mantiene un "piso" de energía ($1e-10$) evitando estados puramente conservativos (inestables) o puramente disipativos (muerte térmica).
 
-Si utilizas un entorno virtual:
+### 2. Topología Áurea y Segunda Cuantización (Regla 2.1)
+
+El vacío está modulado por el **Operador Áureo ($O_n$)**:
+$$O_n = \cos(\pi n) \cdot \cos(\pi \phi n)$$
+
+* **Segunda Cuantización**: El sistema clasifica estados basándose en la paridad de $n$:
+  * **$n$ Impar $\to$ Fermiónico ($c^\dagger$)**: Rompe simetría, genera quiralidad.
+  * **$n$ Par $\to$ Bosónico ($a^\dagger$)**: Simétrico, transporte de información coherente.
+* **No-Localidad**: Debido a la naturaleza irracional de $\phi$, el sistema cumple con $O(n_1 + n_2) \neq O(n_1) + O(n_2)$, garantizando que cada nivel de ocupación sea un modo topológico único.
+
+### 3. Dinámica No-Abeliana H7 (Quaternions)
+
+Mapeamos las amplitudes de probabilidad del hardware cuántico a un espacio de cuaterniones H7, agrupando estados en pares simétricos $|s\rangle \leftrightarrow |\bar{s}\rangle$:
+
+* **Vacuum Overlaps ($W_0, W_1, W_2, W_3$)**: Calculamos la superposición no-lineal $O(n) + O(7-n)$ para cada par. Esta "tensión de vacío" es la que hace al sistema **no reversible**, introduciendo una flecha del tiempo informacional.
+* **Chirality ($\chi$)**: Medimos la no-conmutatividad $[q_{LE}, q_{BE}] \neq 0$ para detectar rupturas de paridad en el hardware.
+
+## 🚀 Pipeline de Producción
+
+### Ejecución de Submission Batch
+
+Para generar un dataset completo de 8 puntos de fase (n=1..4, phi=[0.362, 0.618]) para la competencia:
+
 ```bash
-source env/bin/activate
+python generate_submission.py --out submission.csv --credentials credentials.json
 ```
 
-### Ejecución
-Para correr la simulación física y ejecutar el trabajo VQE en hardware/simulador:
+### Ejecución Individual
+
+Para análisis profundo de un solo punto de fase:
+
 ```bash
 python run_vqe_maxcut.py
 ```
 
-*Nota: Asegúrate de tener tu archivo `credentials.json` en la raíz del proyecto para que la API de `q3as` pueda autenticarse. Este archivo está explícitamente ignorado por git por seguridad.*
+## 🧪 Validación y Rigurosidad (Regla 4)
 
-## 🧪 Pruebas (Regla 4)
+El sistema incluye una suite de `pytest` que valida:
 
-La rigurosidad física y matemática del modelo está validada por una suite de pruebas. Las pruebas verifican que:
-- El operador áureo no colapse a ceros singulares.
-- El Lagrangiano nunca devuelva estados puramente disipativos o conservativos (evitando singularidades).
+* **Isomorfismo Dimensional**: Verificación de unidades y constantes.
+* **Límites Asintóticos**: Comportamiento correcto cuando $\mu \to 0$.
+* **Estabilidad del Operador Áureo**: Prevención de colapsos de fase.
 
-Para ejecutar las pruebas:
+Ejecutar tests:
+
 ```bash
 python -m pytest tests/
 ```
+
+---
+**Desarrollado bajo los principios del Manifiesto de la Analogía Rigurosa.**
+*Autoría Conceptual Original: Jacobo Tlacaelel Mina Rodriguez.  Mina Rodriguez, J. T. (2025) “El Marco de la Analogía Rigurosa: Una Guía para Validar Mapeos Físico-Matemáticos,” Primera parte .

@@ -73,28 +73,52 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Update UI
     function updateUI(data) {
-        // O_N Master
+        // O_N Master & Particle Type
         valGolden.innerText = data.golden_ratio.toFixed(4);
         
-        // Progress
-        valEpoch.innerText = `${data.epochs} / —`;
-        barEpoch.style.width = `${Math.min(100, data.epochs * 2)}%`;
+        const typeBadge = document.getElementById('val-particle-type');
+        typeBadge.innerText = data.particle_type.toUpperCase();
+        if (data.particle_type === 'fermionic') {
+            typeBadge.style.borderColor = 'var(--orange)';
+            typeBadge.style.color = 'var(--orange)';
+        } else {
+            typeBadge.style.borderColor = 'var(--cyan)';
+            typeBadge.style.color = 'var(--cyan)';
+        }
+
+        // Chirality
+        const valChirality = document.getElementById('val-chirality');
+        const barChirality = document.getElementById('bar-chirality');
+        valChirality.innerText = data.chirality.toFixed(4);
+        barChirality.style.width = `${Math.min(100, data.chirality * 100)}%`;
         
+        // Vacuum Overlaps (W0-W3)
+        if (data.pair_overlaps) {
+            data.pair_overlaps.forEach((w, i) => {
+                const valW = document.getElementById(`val-w${i}`);
+                const barW = document.getElementById(`bar-w${i}`);
+                if (valW) valW.innerText = w.toFixed(2);
+                if (barW) {
+                    // Map -2..2 to 0..100%
+                    let pct = ((w + 2) / 4) * 100;
+                    barW.style.width = `${Math.min(100, Math.max(0, pct))}%`;
+                }
+            });
+        }
+
+        // Metriplectic Analytics
+        document.getElementById('val-lsymp').innerText = data.L_symp.toFixed(3);
+        document.getElementById('val-lmetr').innerText = data.L_metr.toFixed(3);
+        let ratio = data.L_metr !== 0 ? (data.L_symp / data.L_metr) : 0;
+        document.getElementById('val-lratio').innerText = ratio.toFixed(3);
+
+        // Drift
         valDrift.innerText = data.drift.toFixed(4);
-        barDrift.style.width = `${Math.min(100, Math.abs(data.drift) * 1000)}%`;
+        barDrift.style.width = `${Math.min(100, Math.abs(data.drift) * 100)}%`;
         
         // Endianness values
         bigEndianSpan.innerText = data.hex_be;
         littleEndianSpan.innerText = data.hex_le;
-        
-        // Mahalanobis metrics (mapped for UI)
-        let pctMah = Math.min(100, data.mahalanobis * 50);
-        barEmpuje.style.width = `${pctMah}%`;
-        
-        // Using L_symp and L_metr for the visual drift comparison
-        let l_ratio = data.L_metr > 0 ? (data.L_symp / data.L_metr) : 0;
-        barDrift072.style.width = `${Math.min(100, l_ratio * 30)}%`;
-        valDrift072.innerText = l_ratio.toFixed(4);
         
         // Global Metrics
         globalEpochs.innerText = data.epochs;

@@ -77,16 +77,33 @@ class MetriplexEndianBridge:
         return encoder(int(value) & mask)
 
     def full_state_report(self, occupation: Tuple[int, ...]) -> Dict:
+        """
+        Generates a physically transparent report of the state, including
+        classification for Second Quantization and Vacuum Overlaps.
+        """
         p = self.oracle._occupation_to_momentum(occupation)
         group, output_vec, energy = self.oracle.forward(p)
+        
+        # Mapping to H7 phase space (0-7)
         h7_state = (p - 1) % 8
         o_n_val = golden_operator(h7_state)
+        
+        # Second Quantization: n odd -> Fermionic, n even -> Bosonic
+        particle_type = "fermionic" if h7_state % 2 != 0 else "bosonic"
+        
+        # Non-Local Vacuum Overlap (Irreversibility measure)
+        # W = O(n) + O(7-n)
+        complement_n = 7 - h7_state
+        vacuum_overlap = o_n_val + golden_operator(complement_n)
+        
         hex16 = self.encode_fock_state(occupation, fmt='uint16')
         L_symp, L_metr = self.compute_lagrangian()
 
         return {
             'occupation': occupation,
             'momentum_p': p,
+            'particle_type': particle_type,
+            'vacuum_overlap': vacuum_overlap,
             'o_n': o_n_val,
             'hex_uint16': hex16,
             'L_symp': L_symp,

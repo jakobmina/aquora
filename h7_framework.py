@@ -1,4 +1,7 @@
-import marimo as mo 
+try:
+    import marimo as mo
+except ImportError:
+    mo = None
 import numpy as np
 from typing import Tuple, Dict, List, Optional
 from dataclasses import dataclass, field

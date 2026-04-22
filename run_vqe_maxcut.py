@@ -88,28 +88,28 @@ class MetriplecticMaxCut:
     # ------------------------------------------------------ particle classify --
     def classify_particle(self) -> tuple:
         """
-        Regla 3.2 — psi (order parameter) derived from O_n classification.
-
-        Returns (ptype, golden, quasiperiod)
+        Regla 2.1 — O_n Golden Operator classification.
+        
+        Adjusted for Second Quantization:
+        n odd  -> parity -1 -> Fermionic (c†)
+        n even -> parity +1 -> Bosonic (a†)
         """
         parity      = math.cos(self.PI * self.n_param)
         quasiperiod = math.cos(self.PI * self.phi_param * self.n_param)
         golden      = parity * quasiperiod
-        core_value  = golden * quasiperiod
-
-        ptype = (
-            "fermionic" if core_value < -0.1 else
-            "bosonic"   if core_value >  0.1 else
-            "unknown"
-        )
-
-        print("--- Particle Classification ---")
+        
+        # Core value reflects parity sign but carries quasiperiodic magnitude
+        core_value  = parity * abs(quasiperiod)
+        
+        ptype = ("fermionic" if core_value < 0 else "bosonic")
+        
+        print("\n--- Particle Classification ---")
         print(f"  Parity:        {parity:+.6f}")
         print(f"  Quasiperiod:   {quasiperiod:+.6f}")
         print(f"  Chiral (O_n):  {golden:+.6f}")
         print(f"  Core value:    {core_value:+.6f}")
         print(f"  Type:          {ptype}")
-
+        
         return ptype, golden, quasiperiod
 
     # ------------------------------------------------- explicit Lagrangian --
@@ -235,7 +235,7 @@ class MetriplecticMaxCut:
 
         # ── H7 → Quaternion (Metriplectic) ──────────────────────────────────
         mapper = H7QuaternionMapper(H7_AMPLITUDES)
-        quat_report = mapper.analyze()
+        quat_report = mapper.analyze(phi_param=self.phi_param)
         mapper.print_report(quat_report)
 
         return symmetry_ratio, state, probs_LE, quat_report
@@ -355,6 +355,8 @@ class MetriplecticMaxCut:
             "is_non_abelian",
             "norm_qLE",
             "norm_qBE",
+            # Vacuum Overlaps (W_pair = O(n) + O(7-n))
+            "W0", "W1", "W2", "W3",
             # H7 classification
             "symmetry_ratio",
             "h7_state",
@@ -434,6 +436,11 @@ class MetriplecticMaxCut:
             "is_non_abelian" : quat_report["is_non_abelian"],
             "norm_qLE"       : round(quat_report["norm_LE"], 8),
             "norm_qBE"       : round(quat_report["norm_BE"], 8),
+            # Vacuum Overlaps (W_pair = O(n) + O(7-n))
+            "W0"             : round(quat_report["pair_overlaps"][0], 8),
+            "W1"             : round(quat_report["pair_overlaps"][1], 8),
+            "W2"             : round(quat_report["pair_overlaps"][2], 8),
+            "W3"             : round(quat_report["pair_overlaps"][3], 8),
             # H7 state
             "symmetry_ratio" : round(symmetry_ratio, 4),
             "h7_state"       : h7_state,

@@ -34,6 +34,9 @@ class AppState:
         self.L_symp = 0.0
         self.L_metr = 0.0
         self.drift = 0.0
+        self.particle_type = "unknown"
+        self.chirality = 0.0
+        self.pair_overlaps = [0.0, 0.0, 0.0, 0.0]
         self.logs = ["[INIT] H7 QNN v0.1 — API initialized"]
 
 state = AppState()
@@ -56,26 +59,39 @@ def roll_dice():
     n2 = random.randint(0, 2)
     occupation = (n0, n1, n2)
     
+    # Use the bridge as the single source of truth
     report = state.bridge.full_state_report(occupation)
-    state.golden_ratio = report['o_n']
-    state.hex_state_big_endian = report['hex_uint16']
     
-    # Reverse the bytes for little endian manually (e.g. 1421 -> 2114)
-    if len(state.hex_state_big_endian) == 4:
-        state.hex_state_little_endian = state.hex_state_big_endian[2:] + state.hex_state_big_endian[:2]
-    else:
-        state.hex_state_little_endian = "???"
+    state.golden_ratio = report['o_n']
+    state.particle_type = report['particle_type']
+    
+    # H7 overlaps from the bridge
+    # For UI display, we still use the 4-pair array from compute_h7_pair_overlaps
+    from h7_quaternion import compute_h7_pair_overlaps, H7QuaternionMapper, H7_AMPLITUDES
+    phi = 0.618
+    state.pair_overlaps = compute_h7_pair_overlaps(phi).tolist()
+    
+    # But we update the current state's log with the bridge's specific overlap
+    state.logs.append(f"[BRIDGE] Overlap for p={report['momentum_p']}: {report['vacuum_overlap']:.4f}")
+
+    mapper = H7QuaternionMapper(H7_AMPLITUDES)
+    h7_rep = mapper.analyze(phi_param=phi)
+    state.chirality = h7_rep["chirality"]
+
+    state.hex_state_big_endian = report['hex_uint16']
+    state.hex_state_little_endian = state.hex_state_big_endian[2:] + state.hex_state_big_endian[:2]
 
     state.L_symp = report['L_symp']
     state.L_metr = report['L_metr']
-    state.drift = report['ratio'] - 2.618034 # deviation from golden ratio squared
+    state.drift = report['ratio'] - 2.618034
     
-    state.logs.append(f"[ROLL] Occupation {occupation} -> p={report['momentum_p']}, Hex={state.hex_state_big_endian}")
+    state.logs.append(f"[ROLL] Type={state.particle_type}, Hex={state.hex_state_big_endian}")
     return get_metrics()
 
 @app.post("/api/epoch")
 def run_epoch():
     # Run a single epoch using the C kernel
+    from core_physics.h7_wrapper import CKernelWrapper
     euler_angles = CKernelWrapper.quaternion_to_euler(state.solver.q_weights)
     qc = state.solver.build_ansatz(euler_angles)
     
@@ -98,10 +114,8 @@ def run_epoch():
     ))
     
     # Update covariance
-    q_gradient = np.dot(
-        np.linalg.inv(state.solver.covariance + state.dynamic_epsilon * np.eye(4)),
-        state.solver.q_weights
-    ) * state.energy * state.config.learning_rate
+    q_inv = np.linalg.inv(state.solver.covariance + state.dynamic_epsilon * np.eye(4))
+    q_gradient = np.dot(q_inv, state.solver.q_weights) * state.energy * state.config.learning_rate
     state.solver._update_covariance(q_gradient)
     
     # Update bond length
@@ -110,12 +124,10 @@ def run_epoch():
     
     state.epochs += 1
     
-    # Bridge Lagrangian (simulating the continuous bridge calculation based on the dynamic_epsilon which maps to L_metr)
-    # The actual bridge calculate Lagrangian from the Topology table, but we can display the constant L_symp / L_metr ratio 
+    # Bridge Lagrangian
     L_symp, L_metr = state.bridge.compute_lagrangian()
     state.L_symp = L_symp
     state.L_metr = L_metr
-    # Use real difference between Mahalanobis gradient and expected entropy as drift
     state.drift = state.norm_grad - state.entropy
     
     state.logs.append(f"[{state.epochs}] Epoch complete: E={state.energy:.4f}, |grad|={state.norm_grad:.4f}")
@@ -138,5 +150,8 @@ def get_metrics():
         "L_metr": state.L_metr,
         "hex_be": state.hex_state_big_endian,
         "hex_le": state.hex_state_little_endian,
+        "particle_type": state.particle_type,
+        "chirality": state.chirality,
+        "pair_overlaps": state.pair_overlaps,
         "logs": state.logs
     }

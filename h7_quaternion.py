@@ -157,6 +157,25 @@ def anti_commutator(q_a: np.ndarray, q_b: np.ndarray) -> np.ndarray:
     return quat_multiply(q_a, q_b) + quat_multiply(q_b, q_a)
 
 
+def compute_h7_pair_overlaps(phi_param: float) -> np.ndarray:
+    """
+    Computes the non-local quasiperiodic superposition for each H7 pair.
+    
+    W_pair = O(n) + O(7-n)  where O(n) = cos(pi * n) * cos(pi * phi * n).
+    
+    This sum is non-linear and captures the 'Vacuum Tension' or 
+    'Superposition Drift' that drives irreversibility.
+    """
+    overlaps = []
+    for i in range(4): # Pairs: (0,7), (1,6), (2,5), (3,4)
+        n1 = i
+        n2 = 7 - i
+        o1 = np.cos(np.pi * n1) * np.cos(np.pi * phi_param * n1)
+        o2 = np.cos(np.pi * n2) * np.cos(np.pi * phi_param * n2)
+        overlaps.append(o1 + o2)
+    return np.array(overlaps, dtype=float)
+
+
 def compute_lagrangian_quaternion(
     q_LE: np.ndarray,
     q_BE: np.ndarray,
@@ -266,13 +285,14 @@ class H7QuaternionMapper:
         return not np.isclose(self.chirality, 0.0, atol=1e-8)
 
     # --------------------------------------------------------------- analyze --
-    def analyze(self) -> dict:
+    def analyze(self, phi_param: float = 0.618) -> dict:
         """
         Run full Metriplectic quaternion analysis.
 
-        Returns
-        -------
-        dict with all physical observables.
+        Parameters
+        ----------
+        phi_param : float
+            The quasiperiodic modulation used to compute Vacuum Overlaps.
         """
         comm  = commutator(self.q_LE, self.q_BE)
         acomm = anti_commutator(self.q_LE, self.q_BE)
@@ -280,6 +300,8 @@ class H7QuaternionMapper:
 
         q_LB = quat_multiply(self.q_LE, self.q_BE)
         q_BL = quat_multiply(self.q_BE, self.q_LE)
+        
+        overlaps = compute_h7_pair_overlaps(phi_param)
 
         return {
             # Quaternion components
@@ -299,6 +321,8 @@ class H7QuaternionMapper:
             "chirality"     : self.chirality,
             "is_non_abelian": self.is_non_abelian,
             "is_commutative": np.allclose(q_LB, q_BL),
+            # Vacuum Overlaps (Superposition Weights)
+            "pair_overlaps" : overlaps,
         }
 
     # --------------------------------------------------------------- display --
@@ -315,6 +339,10 @@ class H7QuaternionMapper:
         for i, (comp, label) in enumerate(zip(report["q_LE"], H7_PAIR_LABELS)):
             print(f"    q{i}  {comp:.6f}   ←  {label}")
         print(f"    ‖q_LE‖ = {report['norm_LE']:.6f}")
+        
+        print("\n  Vacuum Overlaps (Non-Local Superposition):")
+        for i, (w, label) in enumerate(zip(report["pair_overlaps"], H7_PAIR_LABELS)):
+            print(f"    W{i}  {w:+.6f}   ←  {label}")
 
         print("\n  Big-Endian quaternion  q_BE  (time-reversed / [u,S]):")
         for i, comp in enumerate(report["q_BE"]):

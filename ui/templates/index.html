@@ -37,76 +37,60 @@
         <section class="panel on-master">
             <h2>O_N MASTER</h2>
             <div class="master-value" id="val-golden">0.3624</div>
-            <div class="badge">COHERENTE</div>
+            <div class="badge" id="val-particle-type">EQUILIBRIUM</div>
             <div class="progress-container">
                 <div class="label">deriva acumulada <span id="val-drift" class="float-right">0.0000</span></div>
                 <div class="progress-bar"><div class="fill" id="bar-drift" style="width: 0%;"></div></div>
             </div>
             <div class="progress-container">
-                <div class="label">epoch <span id="val-epoch" class="float-right">0 / —</span></div>
-                <div class="progress-bar"><div class="fill" id="bar-epoch" style="width: 0%;"></div></div>
+                <div class="label">chirality (non-abelian) <span id="val-chirality" class="float-right">0.0000</span></div>
+                <div class="progress-bar"><div class="fill orange" id="bar-chirality" style="width: 0%;"></div></div>
             </div>
         </section>
 
-        <section class="panel mahalanobis-euler">
-            <h2>▶ distancia dual Mahalanobis—Euler</h2>
+        <section class="panel vacuum-overlaps">
+            <h2>VACUUM OVERLAPS — H7 PAIRS [O(n)+O(7-n)]</h2>
             <div class="metrics-list">
                 <div class="metric-row">
-                    <span>D_mah(n)</span>
-                    <div class="bar-bg"><div class="bar-fill" style="width: 20%;"></div></div>
-                    <span>—</span>
+                    <span>W0 | 0↔7</span>
+                    <div class="bar-bg"><div class="bar-fill blue" id="bar-w0" style="width: 50%;"></div></div>
+                    <span id="val-w0">0.00</span>
                 </div>
                 <div class="metric-row">
-                    <span>D_mah(7-n)</span>
-                    <div class="bar-bg"><div class="bar-fill" style="width: 40%;"></div></div>
-                    <span>—</span>
+                    <span>W1 | 1↔6</span>
+                    <div class="bar-bg"><div class="bar-fill cyan" id="bar-w1" style="width: 50%;"></div></div>
+                    <span id="val-w1">0.00</span>
                 </div>
                 <div class="metric-row">
-                    <span>D_euc(n)</span>
-                    <div class="bar-bg"><div class="bar-fill" style="width: 30%;"></div></div>
-                    <span>—</span>
+                    <span>W2 | 2↔5</span>
+                    <div class="bar-bg"><div class="bar-fill yellow" id="bar-w2" style="width: 50%;"></div></div>
+                    <span id="val-w2">0.00</span>
                 </div>
                 <div class="metric-row">
-                    <span>D_euc(7-n)</span>
-                    <div class="bar-bg"><div class="bar-fill" style="width: 50%;"></div></div>
-                    <span>—</span>
-                </div>
-                <hr>
-                <div class="metric-row">
-                    <span>ΔD (empuje)</span>
-                    <div class="bar-bg"><div class="bar-fill yellow" id="bar-empuje" style="width: 0%;"></div></div>
-                    <span>—</span>
-                </div>
-                <div class="metric-row">
-                    <span>DRIFT_072</span>
-                    <div class="bar-bg"><div class="bar-fill orange" id="bar-drift-072" style="width: 0%;"></div></div>
-                    <span class="orange" id="val-drift-072">-0.7168</span>
+                    <span>W3 | 3↔4</span>
+                    <div class="bar-bg"><div class="bar-fill orange" id="bar-w3" style="width: 50%;"></div></div>
+                    <span id="val-w3">0.00</span>
                 </div>
             </div>
         </section>
 
         <section class="panel cortical-layers">
-            <h2>▶ capas corticales — O_n por frecuencia</h2>
+            <h2>METRIPLECTIC ANALYTICS</h2>
             <div class="cards">
                 <div class="card">
-                    <div class="freq">~250kHz</div>
-                    <div class="val">0.3624</div>
-                    <div class="desc">reflejo</div>
+                    <div class="freq">L_symp</div>
+                    <div class="val blue" id="val-lsymp">0.000</div>
+                    <div class="desc">hamiltonian</div>
                 </div>
                 <div class="card">
-                    <div class="freq">~100kHz</div>
-                    <div class="val">0.3624</div>
-                    <div class="desc">patrón</div>
+                    <div class="freq">L_metr</div>
+                    <div class="val yellow" id="val-lmetr">0.000</div>
+                    <div class="desc">dissipative</div>
                 </div>
                 <div class="card">
-                    <div class="freq">~10kHz</div>
-                    <div class="val">0.3624</div>
-                    <div class="desc">track H7</div>
-                </div>
-                <div class="card">
-                    <div class="freq">~100Hz</div>
-                    <div class="val">0.3624</div>
-                    <div class="desc">Gemma 4</div>
+                    <div class="freq">ratio</div>
+                    <div class="val cyan" id="val-lratio">0.000</div>
+                    <div class="desc">L_s / L_m</div>
                 </div>
             </div>
             
