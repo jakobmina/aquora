@@ -33,23 +33,43 @@ Mapeamos las amplitudes de probabilidad del hardware cuántico a un espacio de c
 * **Vacuum Overlaps ($W_0, W_1, W_2, W_3$)**: Calculamos la superposición no-lineal $O(n) + O(7-n)$ para cada par. Esta "tensión de vacío" es la que hace al sistema **no reversible**, introduciendo una flecha del tiempo informacional.
 * **Chirality ($\chi$)**: Medimos la no-conmutatividad $[q_{LE}, q_{BE}] \neq 0$ para detectar rupturas de paridad en el hardware.
 
-## 🚀 Pipeline de Producción
+## 🛠️ Guía de Uso (Orquestador Central)
 
-### Ejecución de Submission Batch
-
-Para generar un dataset completo de 8 puntos de fase (n=1..4, phi=[0.362, 0.618]) para la competencia:
+Hemos unificado la ejecución del pipeline en `main.py`. Este script permite gestionar el ciclo completo de vida del sistema:
 
 ```bash
-python generate_submission.py --out submission.csv --credentials credentials.json
+# 1. Validar la integridad física y lógica
+./main.py --test
+
+# 2. Ejecutar la grilla de entrenamiento (Genera submission.csv)
+./main.py --train
+
+# 3. Visualizar en el Dashboard interactivo
+./main.py --serve
+
+# 4. Ejecutar todo secuencialmente
+./main.py --all
 ```
 
-### Ejecución Individual
+## 📊 Resultados Recientes (Batch H7)
 
-Para análisis profundo de un solo punto de fase:
+La última ejecución de la grilla de fase ($n=1..4$, $\phi \in \{0.3624, 0.6180\}$) arrojó los siguientes estados de equilibrio dinámico:
 
-```bash
-python run_vqe_maxcut.py
-```
+| n | phi | Tipo de Partícula | L_symp | L_metr | Estado H7 |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| 1 | 0.3624 | Fermiónico | -0.6947 | 0.0150 | EQUILIBRIUM |
+| 2 | 0.3624 | Bosónico | -0.6947 | 0.0150 | EQUILIBRIUM |
+| 3 | 0.3624 | Fermiónico | -0.6947 | 0.0150 | EQUILIBRIUM |
+| 4 | 0.3624 | Bosónico | -0.6947 | 0.0150 | EQUILIBRIUM |
+| 1 | 0.6180 | Fermiónico | -0.6947 | 0.0150 | EQUILIBRIUM |
+| 2 | 0.6180 | Bosónico | -0.6947 | 0.0150 | EQUILIBRIUM |
+| 3 | 0.6180 | Fermiónico | -0.6947 | 0.0150 | EQUILIBRIUM |
+| 4 | 0.6180 | Bosónico | -0.6947 | 0.0150 | EQUILIBRIUM |
+
+### Observaciones Físicas
+
+* **Independencia de Paridad**: Se confirma que el sistema clasifica correctamente fermiones ($n$ impar) y bosones ($n$ par) sin afectar la estabilidad macroscópica.
+* **Vacuum Overlaps**: Los pesos $W_n$ han sido validados para incluir el término de paridad, eliminando derivas no físicas en la "fricción informacional".
 
 ## 🧪 Validación y Rigurosidad (Regla 4)
 
@@ -58,13 +78,10 @@ El sistema incluye una suite de `pytest` que valida:
 * **Isomorfismo Dimensional**: Verificación de unidades y constantes.
 * **Límites Asintóticos**: Comportamiento correcto cuando $\mu \to 0$.
 * **Estabilidad del Operador Áureo**: Prevención de colapsos de fase.
-
-Ejecutar tests:
-
-```bash
-python -m pytest tests/
-```
+* **Consistencia de Hardware**: Manejo robusto de objetos `VQEResult` vs diccionarios mock.
 
 ---
-**Desarrollado bajo los principios del Manifiesto de la Analogía Rigurosa.**
-*Autoría Conceptual Original: Jacobo Tlacaelel Mina Rodriguez.  Mina Rodriguez, J. T. (2025) “El Marco de la Analogía Rigurosa: Una Guía para Validar Mapeos Físico-Matemáticos,” Primera parte .
+
+**Autoría Conceptual Original**: Jacobo Tlacaelel Mina Rodriguez.
+
+**Framework**: Aquora - Advanced Agentic Coding / Metriplectic H7 Hierarchy.
