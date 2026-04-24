@@ -12,11 +12,19 @@ El sistema cumple con el **Manifiesto de la Analogía Rigurosa (Nivel 3)**, aseg
 
 Cualquier simulación se define mediante dos corchetes ortogonales que compiten en tiempo real:
 
-* **Componente Simpléctica ($\mathcal{L}_{symp}$)**: Genera movimiento conservativo (Hamiltoniano). Representa la estructura del problema MaxCut.
-* **Componente Métrica ($\mathcal{L}_{metr}$)**: Genera relajación hacia un atractor (Entropía). Representa la disipación necesaria para la convergencia del optimizador.
-* **Prohibición de Singularidades**: El sistema mantiene un "piso" de energía ($1e-10$) evitando estados puramente conservativos (inestables) o puramente disipativos (muerte térmica).
+* **Componente Simpléctica ($\mathcal{L}_{symp}$)**: Genera movimiento conservativo (Hamiltoniano).
+* **Componente Métrica ($\mathcal{L}_{metr}$)**: Genera relajación hacia un atractor (Entropía).
+* **Lagrangiano Informacional ($\mathcal{L}_{info}$)**: Mide la fricción entre la intención cognitiva y la estabilidad física.
+* **Prohibición de Singularidades**: El sistema mantiene un "piso" de energía evitando estados puramente conservativos o disipativos.
 
-### 2. Topología Áurea y Segunda Cuantización (Regla 2.1)
+### 2. Gobernador de Fase (Vertex AI)
+
+Integramos **Vertex AI (Gemini 1.5 Flash)** como un Oráculo de Información:
+
+* **Mapeo Cognitivo**: Traduce prompts en parámetros metriplécticos ($\rho, v$).
+* **Gobernanza de Bucle Cerrado**: Valida la estabilidad cuántica antes de aprobar la ejecución.
+
+### 3. Topología Áurea y Segunda Cuantización (Regla 2.1)
 
 El vacío está modulado por el **Operador Áureo ($O_n$)**:
 $$O_n = \cos(\pi n) \cdot \cos(\pi \phi n)$$
@@ -35,20 +43,20 @@ Mapeamos las amplitudes de probabilidad del hardware cuántico a un espacio de c
 
 ## 🛠️ Guía de Uso (Orquestador Central)
 
-Hemos unificado la ejecución del pipeline en `main.py`. Este script permite gestionar el ciclo completo de vida del sistema:
+Hemos unificado la ejecución del pipeline en `main.py` y el bridge de gobernanza.
 
 ```bash
 # 1. Validar la integridad física y lógica
 ./main.py --test
 
-# 2. Ejecutar la grilla de entrenamiento (Genera submission.csv)
+# 2. Ejecutar el Gobernador de Fase (Vertex AI)
+python vertex_h7_bridge.py
+
+# 3. Ejecutar la grilla de entrenamiento
 ./main.py --train
 
-# 3. Visualizar en el Dashboard interactivo
+# 4. Visualizar en el Dashboard
 ./main.py --serve
-
-# 4. Ejecutar todo secuencialmente
-./main.py --all
 ```
 
 ## 📊 Resultados Recientes (Batch H7)
@@ -75,10 +83,11 @@ La última ejecución de la grilla de fase ($n=1..4$, $\phi \in \{0.3624, 0.6180
 
 El sistema incluye una suite de `pytest` que valida:
 
+* **test_vertex_bridge.py**: Valida el mapeo oracular y la gobernanza de intención.
+* **test_run_vqe_maxcut.py**: Pruebas de integración del pipeline VQE completo.
 * **Isomorfismo Dimensional**: Verificación de unidades y constantes.
 * **Límites Asintóticos**: Comportamiento correcto cuando $\mu \to 0$.
 * **Estabilidad del Operador Áureo**: Prevención de colapsos de fase.
-* **Consistencia de Hardware**: Manejo robusto de objetos `VQEResult` vs diccionarios mock.
 
 ---
 
