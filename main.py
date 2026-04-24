@@ -36,13 +36,14 @@ def main():
     parser = argparse.ArgumentParser(description="H7 Metriplectic Pipeline Orchestrator")
     parser.add_argument("--train", action="store_true", help="Run VQE grid and generate submission.csv")
     parser.add_argument("--serve", action="store_true", help="Start the Dashboard API (FastAPI)")
-    parser.add_argument("--test", action="store_true", help="Run the full test suite")
-    parser.add_argument("--all", action="store_true", help="Run tests, then train, then serve")
+    parser.add_argument("--test", action="store_true", help="Run the full test suite (Physics + Bridge)")
+    parser.add_argument("--governor", action="store_true", help="Run the Phase Governor (Vertex AI Bridge)")
+    parser.add_argument("--all", action="store_true", help="Run tests, governor, then train, then serve")
 
     args = parser.parse_args()
 
     # Default to help if no args
-    if not any([args.train, args.serve, args.test, args.all]):
+    if not any([args.train, args.serve, args.test, args.governor, args.all]):
         parser.print_help()
         return
 
@@ -50,10 +51,17 @@ def main():
     if args.test or args.all:
         run_command(
             [sys.executable, "-m", "pytest", "tests/"],
-            "Executing full validation suite (H7 Physics + VQE Logic)"
+            "Executing full validation suite (H7 Physics + VQE + Bridge)"
         )
 
-    # 2. Run Training
+    # 2. Run Phase Governor (Vertex AI)
+    if args.governor or args.all:
+        run_command(
+            [sys.executable, "vertex_h7_bridge.py"],
+            "Activating H7 Phase Governor (Vertex AI Cognitive Mapping)"
+        )
+
+    # 3. Run Training
     if args.train or args.all:
         creds = "credentials.json"
         if not os.path.exists(creds):
@@ -64,7 +72,7 @@ def main():
             "Generating H7 Metriplectic Submission Grid"
         )
 
-    # 3. Serve Dashboard
+    # 4. Serve Dashboard
     if args.serve or args.all:
         run_command(
             [sys.executable, "api.py"],

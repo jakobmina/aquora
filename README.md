@@ -50,7 +50,7 @@ Hemos unificado la ejecución del pipeline en `main.py` y el bridge de gobernanz
 ./main.py --test
 
 # 2. Ejecutar el Gobernador de Fase (Vertex AI)
-python vertex_h7_bridge.py
+./main.py --governor
 
 # 3. Ejecutar la grilla de entrenamiento
 ./main.py --train
