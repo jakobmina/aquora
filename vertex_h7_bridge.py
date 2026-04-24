@@ -49,29 +49,48 @@ class VertexH7Bridge:
     def _get_physical_intent(self, prompt: str, custom_config: GenerationConfig | None = None):
         """
         Interpreta el prompt del usuario como un par (rho, v) en el espacio de fase.
+        Implementa un 'Smart Mock' si Vertex AI no está disponible.
         """
-        if not self.model:
-            return {"rho": 0.5, "v": 0.5, "reasoning": "Modo offline/mock"}
-
-        instruction = """
-        Eres el Oráculo de Información del Sistema Operativo H7.
-        Tu tarea es mapear la intención del usuario a parámetros metriplécticos:
-        1. rho (densidad): 0.0 (vacío/inacción) a 1.0 (saturación/máximo esfuerzo).
-        2. v (velocidad/intencionalidad): -1.0 (entropía/destrucción) a 1.0 (neguentropía/evolución).
+        if self.model:
+            instruction = """
+            Eres el Oráculo de Información del Sistema Operativo H7.
+            Tu tarea es mapear la intención del usuario a parámetros metriplécticos:
+            1. rho (densidad): 0.0 (vacío/inacción) a 1.0 (saturación/máximo esfuerzo).
+            2. v (velocidad/intencionalidad): -1.0 (entropía/destrucción) a 1.0 (neguentropía/evolución).
+            
+            Devuelve estrictamente un JSON plano: {"rho": float, "v": float, "reasoning": "breve explicacion"}
+            """
+            
+            try:
+                config = custom_config if custom_config else self.config
+                response = self.model.generate_content(
+                    f"{instruction}\n\nEntrada del usuario: {prompt}",
+                    generation_config=config
+                )
+                return json.loads(response.text)
+            except Exception as e:
+                print(f"[BRIDGE] Error en inferencia (Vertex): {e}")
         
-        Devuelve estrictamente un JSON plano: {"rho": float, "v": float, "reasoning": "breve explicacion"}
-        """
-        
-        try:
-            config = custom_config if custom_config else self.config
-            response = self.model.generate_content(
-                f"{instruction}\n\nEntrada del usuario: {prompt}",
-                generation_config=config
-            )
-            return json.loads(response.text)
-        except Exception as e:
-            print(f"[BRIDGE] Error en inferencia: {e}")
-            return {"rho": 0.5, "v": 0.0, "reasoning": "fallback por error"}
+        # --- Smart Mock Logic ---
+        p_lower = prompt.lower()
+        if any(w in p_lower for w in ["evoluciona", "coherencia", "orden", "construye", "mejor", "sincronia"]):
+            return {
+                "rho": 0.8, 
+                "v": 0.9, 
+                "reasoning": "Intención detectada como constructiva/evolutiva (Smart Mock)."
+            }
+        elif any(w in p_lower for w in ["ruido", "colapso", "destruye", "caos", "disipacion", "friccion"]):
+            return {
+                "rho": 0.95, 
+                "v": -0.85, 
+                "reasoning": "Intención detectada como entrópica/destructiva (Smart Mock)."
+            }
+        else:
+            return {
+                "rho": 0.3, 
+                "v": 0.0, 
+                "reasoning": "Intención neutra o indeterminada (Smart Mock)."
+            }
 
     def run_controlled_vqe(self, user_prompt: str):
         """

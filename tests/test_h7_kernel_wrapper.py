@@ -28,7 +28,7 @@ def test_update_weights_compatibility():
     eps = 1e-4
     
     # This should not crash (handles 3x3 -> 4x4 padding internally)
-    norm_grad, mahal_dist, cov_inv = CKernelWrapper.update_weights(
+    norm_grad, mahal_dist, cov_inv = CKernelWrapper.update_weights_from_counts(
         q_weights, counts, n_qubits, energy, lr, eps
     )
     

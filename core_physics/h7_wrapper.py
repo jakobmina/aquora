@@ -102,6 +102,35 @@ class CKernelWrapper:
     @staticmethod
     def update_weights(
         q_weights: np.ndarray,
+        covariance: np.ndarray,
+        energy: float,
+        learning_rate: float,
+        dynamic_epsilon: float
+    ) -> float:
+        """
+        Actualiza los pesos cuaterniónicos usando el kernel C y una matriz de covarianza directa.
+        Mantiene compatibilidad con el Solver y la API.
+        """
+        q_ptr = q_weights.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+        
+        # Asegurar matriz 4x4 para el kernel C
+        if covariance.shape == (4, 4):
+            cov_4x4 = covariance
+        else:
+            cov_4x4 = np.eye(4, dtype=np.float64) * 1e-6
+            n_min = min(covariance.shape[0], 4)
+            cov_4x4[:n_min, :n_min] = covariance[:n_min, :n_min]
+            
+        cov_ptr = cov_4x4.flatten().astype(np.float64).ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+        
+        norm_grad = _kernel.update_quaternion_weights(
+            q_ptr, cov_ptr, energy, learning_rate, dynamic_epsilon
+        )
+        return float(norm_grad)
+
+    @staticmethod
+    def update_weights_from_counts(
+        q_weights: np.ndarray,
         counts: dict[str, int],
         n_qubits: int,
         energy: float,
@@ -110,8 +139,8 @@ class CKernelWrapper:
         reg_lambda: float = 1e-6
     ) -> tuple[float, float, np.ndarray]:
         """
-        Actualiza los pesos cuaterniónicos usando el kernel C.
-        Adapta la matriz de covarianza para que sea compatible con el kernel 4x4.
+        Actualiza los pesos cuaterniónicos deduciendo la covarianza desde los counts.
+        Retorna (norm_grad, mahalanobis_dist, cov_inv).
         """
         mu, cov, cov_inv = covariance_from_circuit_probs(counts, n_qubits, reg_lambda)
         mahal_dist = mahalanobis_distance(q_weights, mu, cov_inv)
@@ -121,7 +150,6 @@ class CKernelWrapper:
         n_min = min(n_qubits, 4)
         cov_4x4[:n_min, :n_min] = cov[:n_min, :n_min]
 
-        # Pasamos 'cov' (no invertida) porque el kernel C la invierte internamente
         q_ptr = q_weights.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
         cov_ptr = cov_4x4.flatten().astype(np.float64).ctypes.data_as(ctypes.POINTER(ctypes.c_double))
         

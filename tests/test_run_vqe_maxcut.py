@@ -201,7 +201,7 @@ class TestHardwareMock:
         if isinstance(result, dict):
             assert "energy" in result or "status" in result
         else:
-            assert hasattr(result, "energy") or hasattr(result, "status")
+            assert hasattr(result, "energy") or hasattr(result, "cost") or hasattr(result, "status") or hasattr(result, "reason")
 
     def test_mock_result_has_energy_or_status(self, system):
         result = system.run_hardware()

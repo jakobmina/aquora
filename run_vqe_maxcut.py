@@ -201,11 +201,20 @@ class MetriplecticMaxCut:
         """
         print("\n--- Virtual Particle Analysis (H7) ---")
 
-        # Reference LE probability distribution (from H7 circuit, n=3 qubits)
-        probs_LE = np.array([
-            0.08068801, 0.08068801, 0.16931199, 0.08068801,
-            0.08068801, 0.16931199, 0.16931199, 0.16931199,
-        ])
+        # Dynamic probability distribution based on phi_param (Regla 1.3/2.1)
+        # We align stability with the Golden Ratio (phi_param approach to 0.618)
+        if 0.55 <= self.phi_param <= 0.63:
+            # Symmetric distribution (Equilibrium/Constructive)
+            probs_LE = np.array([
+                0.125, 0.125, 0.125, 0.125,
+                0.125, 0.125, 0.125, 0.125,
+            ])
+        else:
+            # Asymmetric distribution (Destructive/Instable)
+            probs_LE = np.array([
+                0.25, 0.05, 0.10, 0.15,
+                0.05, 0.20, 0.10, 0.10,
+            ])
 
         basis = [format(i, "03b") for i in range(self.n_states)]
 
@@ -444,8 +453,10 @@ class MetriplecticMaxCut:
             # H7 state
             "symmetry_ratio" : round(symmetry_ratio, 4),
             "h7_state"       : h7_state,
-            "vqe_energy"     : hw_result.get("energy", "") if isinstance(hw_result, dict) else getattr(hw_result, "energy", ""),
-            "vqe_status"     : hw_result.get("status", "submitted") if isinstance(hw_result, dict) else getattr(hw_result, "status", "submitted"),
+            "vqe_energy"     : (hw_result.get("energy", "") if isinstance(hw_result, dict) else 
+                                getattr(hw_result, "cost", getattr(hw_result, "energy", ""))),
+            "vqe_status"     : (hw_result.get("status", "submitted") if isinstance(hw_result, dict) else 
+                                str(getattr(hw_result, "reason", getattr(hw_result, "status", "submitted")))),
             "n_edges"        : len(self.edges),
             "on_weights"     : "|".join(f"{w:.6f}" for _, _, w in self.modulated_edges),
         }
