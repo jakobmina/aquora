@@ -155,3 +155,8 @@ def get_metrics():
         "pair_overlaps": state.pair_overlaps,
         "logs": state.logs
     }
+
+if __name__ == "__main__":
+    import uvicorn
+    # Start the server on port 8000
+    uvicorn.run(app, host="0.0.0.0", port=8000)
