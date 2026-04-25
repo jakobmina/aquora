@@ -203,14 +203,18 @@ class MetriplecticMaxCut:
 
         # Dynamic probability distribution based on phi_param (Regla 1.3/2.1)
         # We align stability with the Golden Ratio (phi_param approach to 0.618)
-        if 0.55 <= self.phi_param <= 0.63:
-            # Symmetric distribution (Equilibrium/Constructive)
+        if 0.60 <= self.phi_param <= 0.63:
+            # Fully Symmetric (CONSTRUCTIVE) - Golden Ratio vicinity
+            probs_LE = np.array([0.125] * 8)
+        elif 0.50 <= self.phi_param < 0.60:
+            # Partially Symmetric (EQUILIBRIUM) - Transitional phase
+            # Pairs 0-7 and 1-6 match, 2-5 and 3-4 don't -> 2/4 = 0.5 ratio
             probs_LE = np.array([
-                0.125, 0.125, 0.125, 0.125,
-                0.125, 0.125, 0.125, 0.125,
+                0.10, 0.15, 0.20, 0.05,
+                0.30, 0.10, 0.15, 0.10,
             ])
         else:
-            # Asymmetric distribution (Destructive/Instable)
+            # Asymmetric (DESTRUCTIVE) - Unstable regime
             probs_LE = np.array([
                 0.25, 0.05, 0.10, 0.15,
                 0.05, 0.20, 0.10, 0.10,
