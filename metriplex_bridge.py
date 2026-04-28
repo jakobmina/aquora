@@ -110,3 +110,83 @@ class MetriplexEndianBridge:
             'L_metr': L_metr,
             'ratio': L_symp / L_metr if L_metr > 0 else 0
         }
+
+import ctypes
+import os
+
+class QuantumStateC(ctypes.Structure):
+    _fields_ = [
+        ("real_parts", ctypes.POINTER(ctypes.c_double)),
+        ("imag_parts", ctypes.POINTER(ctypes.c_double)),
+        ("dimension", ctypes.c_int)
+    ]
+
+class LagrangianC(ctypes.Structure):
+    _fields_ = [
+        ("L_symp", ctypes.c_double),
+        ("L_metr", ctypes.c_double)
+    ]
+
+class CovarianceDataC(ctypes.Structure):
+    _fields_ = [
+        ("matrix", ctypes.POINTER(ctypes.c_double)),
+        ("delta", ctypes.c_double),
+        ("dimension", ctypes.c_int)
+    ]
+
+class MetriplexCKernel:
+    """
+    High-performance C Kernel wrapper for Metriplectic H7 Physics.
+    """
+    def __init__(self, lib_path="core_physics/libmetriplex_core.so"):
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        full_path = os.path.join(base_dir, lib_path)
+        if not os.path.exists(full_path):
+            raise FileNotFoundError(f"C Kernel library not found at {full_path}. Run 'make' in core_physics/")
+            
+        self.lib = ctypes.CDLL(full_path)
+        
+        # double compute_golden_operator(double n)
+        self.lib.compute_golden_operator.argtypes = [ctypes.c_double]
+        self.lib.compute_golden_operator.restype = ctypes.c_double
+        
+        # Lagrangian compute_lagrangian(const QuantumState* state, const double* H_real, const double* H_imag, const double* S_real, const double* S_imag)
+        self.lib.compute_lagrangian.argtypes = [
+            ctypes.POINTER(QuantumStateC),
+            ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double)
+        ]
+        self.lib.compute_lagrangian.restype = LagrangianC
+        
+        # void evolve_phase(QuantumState* state, double dt, Lagrangian lagr)
+        self.lib.evolve_phase.argtypes = [ctypes.POINTER(QuantumStateC), ctypes.c_double, LagrangianC]
+        self.lib.evolve_phase.restype = None
+        
+        # void compute_covariance(const QuantumState* state, CovarianceData* out_cov)
+        self.lib.compute_covariance.argtypes = [ctypes.POINTER(QuantumStateC), ctypes.POINTER(CovarianceDataC)]
+        self.lib.compute_covariance.restype = None
+
+    def allocate_state(self, real_arr: np.ndarray, imag_arr: np.ndarray) -> QuantumStateC:
+        dim = len(real_arr)
+        state = QuantumStateC()
+        state.dimension = dim
+        state.real_parts = real_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+        state.imag_parts = imag_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+        return state
+
+    def compute_lagrangian(self, state: QuantumStateC, H: np.ndarray, S: np.ndarray) -> Tuple[float, float]:
+        H_real = np.real(H).flatten().astype(np.float64).ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+        H_imag = np.imag(H).flatten().astype(np.float64).ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+        S_real = np.real(S).flatten().astype(np.float64).ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+        S_imag = np.imag(S).flatten().astype(np.float64).ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+        
+        L = self.lib.compute_lagrangian(ctypes.byref(state), H_real, H_imag, S_real, S_imag)
+        return L.L_symp, L.L_metr
+
+    def evolve_phase(self, state: QuantumStateC, dt: float, L_symp: float, L_metr: float):
+        lagr = LagrangianC(L_symp=L_symp, L_metr=L_metr)
+        self.lib.evolve_phase(ctypes.byref(state), dt, lagr)
+
+    def get_golden_operator(self, n: float) -> float:
+        return self.lib.compute_golden_operator(n)
+

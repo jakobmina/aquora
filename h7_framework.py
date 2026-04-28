@@ -42,11 +42,11 @@ def run_quantum_experiment(n_param, phi_param):
     # =========================================================================
     # PART 1: Particle Classification
     # =========================================================================
-
-    parity = COS(PI * n_param)
-    quasiperiod = COS(PI * phi_param * n_param)
-    golden = parity * quasiperiod
-
+    n=0
+    parity = COS(np.pi)
+    quasiperiod = COS(np.pi * 1.618)
+    golden = n * (quasiperiod * quasiperiod) 
+    
     def classify_particle(golden_val):
         """Classify particle type from golden value."""
         if golden_val < 0.1:
@@ -78,10 +78,11 @@ def run_quantum_experiment(n_param, phi_param):
 
     # Apply rotation gates
     # φ parameter as radian angle (not cosine)
-    rotation_angle = PI * phi_param  # Radianes, no coseno del anterior
+    rotation_angle = 1.618
+     
     qc.rz(rotation_angle, 0)
-    qc.ry(rotation_angle, 1)
-    qc.rx(0, 2)  # Identity on q2
+    qc.ry(np.pi, 0)
+    qc.rx(theta=0,qubit=0)  # Identity on q2
 
     # Two-qubit and three-qubit gates
     qc.cswap(0, 2, 1)  # Controlled-SWAP: control=0, swap (2,1)
@@ -114,7 +115,7 @@ def run_quantum_experiment(n_param, phi_param):
 
     # Measurement (EXPLICIT LITTLE-ENDIAN MAPPING)
     print("\n  Adding measurements (little-endian: qubit i → cbit i)...")
-    qc.measure([0, 1, 2], [0, 1, 2])
+    qc.measure_all()
 
     print("\n  Quantum Circuit Diagram (after measurement):")
     print(qc.draw())

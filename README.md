@@ -19,10 +19,17 @@ Cualquier simulación se define mediante dos corchetes ortogonales que compiten 
 
 ### 2. Gobernador de Fase (Vertex AI)
 
-Integramos **Vertex AI (Gemini 1.5 Flash)** como un Oráculo de Información:
+Integramos **Vertex AI (Gemini)** como un Oráculo de Información:
 
 * **Mapeo Cognitivo**: Traduce prompts en parámetros metriplécticos ($\rho, v$).
 * **Gobernanza de Bucle Cerrado**: Valida la estabilidad cuántica antes de aprobar la ejecución.
+
+### 3. El Kernel Computacional en C (Metriplex Core)
+
+Para garantizar un isomorfismo físico puro y maximizar el rendimiento, la física estricta se procesa en un **Kernel de C (`core_physics/`)**:
+
+* **Separación de Responsabilidades**: Python maneja la lógica cognitiva (Gobernador, Endianness, Oráculo), mientras que C procesa las matemáticas pesadas (matrices de covarianza, $L_{symp}$, $L_{metr}$).
+* **Acceso de Memoria Zero-Copy**: Usamos `ctypes` y punteros directos a memoria para evitar copias entre Python y C, logrando una "Viscosidad Informacional" casi nula.
 
 ### 3. Topología Áurea y Segunda Cuantización (Regla 2.1)
 
@@ -46,6 +53,11 @@ Mapeamos las amplitudes de probabilidad del hardware cuántico a un espacio de c
 Hemos unificado la ejecución del pipeline en `main.py` y el bridge de gobernanza.
 
 ```bash
+# 0. Compilar el Kernel Físico en C (Obligatorio la primera vez)
+cd core_physics
+make
+cd ..
+
 # 1. Validar la integridad física y lógica
 ./main.py --test
 
