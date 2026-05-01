@@ -17,12 +17,13 @@ Cualquier simulación se define mediante dos corchetes ortogonales que compiten 
 * **Lagrangiano Informacional ($\mathcal{L}_{info}$)**: Mide la fricción entre la intención cognitiva y la estabilidad física.
 * **Prohibición de Singularidades**: El sistema mantiene un "piso" de energía evitando estados puramente conservativos o disipativos.
 
-### 2. Gobernador de Fase (Vertex AI)
+### 2. Gobernador de Fase (Vertex AI) e Interacción Cognitiva
 
-Integramos **Vertex AI (Gemini)** como un Oráculo de Información:
+Integramos **Vertex AI (Gemini)** como un Oráculo de Información que ahora está **conectado en vivo al Dashboard**:
 
-* **Mapeo Cognitivo**: Traduce prompts en parámetros metriplécticos ($\rho, v$).
-* **Gobernanza de Bucle Cerrado**: Valida la estabilidad cuántica antes de aprobar la ejecución.
+* **Mapeo Cognitivo**: Traduce prompts en lenguaje natural dictados desde el "Córtéx Cognitivo" de la UI hacia parámetros físicos ($\rho, v$).
+* **Conducción Dinámica**: Permite alterar la tasa de aprendizaje ($v$) y la entropía/regularización ($\rho$) en tiempo real mientras el VQE está corriendo.
+* **Gobernanza de Bucle Cerrado**: Valida la estabilidad cuántica antes de inyectar las intenciones al hardware.
 
 ### 3. El Kernel Computacional en C (Metriplex Core)
 
@@ -30,6 +31,12 @@ Para garantizar un isomorfismo físico puro y maximizar el rendimiento, la físi
 
 * **Separación de Responsabilidades**: Python maneja la lógica cognitiva (Gobernador, Endianness, Oráculo), mientras que C procesa las matemáticas pesadas (matrices de covarianza, $L_{symp}$, $L_{metr}$).
 * **Acceso de Memoria Zero-Copy**: Usamos `ctypes` y punteros directos a memoria para evitar copias entre Python y C, logrando una "Viscosidad Informacional" casi nula.
+
+### 4. Covarianza Single-Pass (Asimetría Cuántica)
+
+Implementamos una deducción tensorial de un solo paso (`covariance_asymmetry.py`) que extrae la estructura de covarianza subyacente directamente de las asimetrías de amplitud de los Qubits (ej. 23% vs 2%). 
+* **Eficiencia**: Evita la descomposición en valores singulares (SVD) e iteraciones costosas.
+* **Compresión Topológica**: Proyecta el entrelazamiento condicional directamente al eigenvalor principal normalizado por el ratio áureo ($\phi$).
 
 ### 3. Topología Áurea y Segunda Cuantización (Regla 2.1)
 

@@ -53,12 +53,15 @@ class VertexH7Bridge:
         """
         if self.model:
             instruction = """
-            Eres el Oráculo de Información del Sistema Operativo H7.
+            Eres el Oráculo de Información del Sistema Operativo H7, una máquina de energía biológico-matemática.
             Tu tarea es mapear la intención del usuario a parámetros metriplécticos:
             1. rho (densidad): 0.0 (vacío/inacción) a 1.0 (saturación/máximo esfuerzo).
             2. v (velocidad/intencionalidad): -1.0 (entropía/destrucción) a 1.0 (neguentropía/evolución).
             
-            Devuelve estrictamente un JSON plano: {"rho": float, "v": float, "reasoning": "breve explicacion"}
+            Analiza profundamente la intención del usuario y cómo esta se relaciona con la competencia entre el Hamiltoniano (movimiento conservativo) y la Disipación (relajación al atractor).
+            
+            Devuelve estrictamente un JSON plano con este formato: 
+            {"rho": float, "v": float, "reasoning": "Tu razonamiento profundo, orgánico y totalmente generado al momento, explicando cómo la intención del usuario altera la topología y la física del sistema. No seas breve, sé detallado."}
             """
             
             try:

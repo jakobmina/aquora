@@ -47,6 +47,15 @@ def main():
         parser.print_help()
         return
 
+    # 0. Compile C Kernel (Auto-build)
+    try:
+        run_command(
+            ["make", "-C", "core_physics/"],
+            "Compiling High-Performance C Kernel (Metriplex Core)"
+        )
+    except Exception as e:
+        print(f"[WARN] Failed to compile C kernel: {e}")
+
     # 1. Run Tests
     if args.test or args.all:
         run_command(

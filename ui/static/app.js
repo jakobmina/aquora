@@ -24,6 +24,11 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const logContainer = document.getElementById('log-container');
     
+    // Cognitive Cortex Elements
+    const inputIntent = document.getElementById('input-intent');
+    const btnIntent = document.getElementById('btn-intent');
+    const oracleResponse = document.getElementById('oracle-response');
+    
     // Extracted Hex Elements
     const bigEndianSpan = document.querySelector('.big-endian .value');
     const littleEndianSpan = document.querySelector('.little-endian .value');
@@ -68,6 +73,35 @@ document.addEventListener('DOMContentLoaded', () => {
             updateUI(data);
         } catch (e) {
             console.error("Roll failed", e);
+        }
+    }
+
+    async function sendIntent() {
+        const intentText = inputIntent.value.trim();
+        if (!intentText) return;
+
+        oracleResponse.innerText = "Sincronizando con Vertex AI (Gobernador)...";
+        btnIntent.disabled = true;
+
+        try {
+            const response = await fetch('/api/intent', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt: intentText })
+            });
+            const data = await response.json();
+            
+            if (data.error) {
+                oracleResponse.innerText = `[ERROR]: ${data.error}`;
+            } else {
+                oracleResponse.innerHTML = `<span style="color:var(--cyan)">[RHO: ${data.rho.toFixed(3)}, V: ${data.v.toFixed(3)}]</span><br>${data.reasoning}`;
+                inputIntent.value = '';
+                // The intent modifies physics params on backend, update UI next epoch
+            }
+        } catch (e) {
+            oracleResponse.innerText = "Fallo de conexión oracular.";
+        } finally {
+            btnIntent.disabled = false;
         }
     }
     
@@ -142,6 +176,11 @@ document.addEventListener('DOMContentLoaded', () => {
     btnEpoch.addEventListener('click', doEpoch);
     btnReset.addEventListener('click', doReset);
     btnRoll.addEventListener('click', doRoll);
+    btnIntent.addEventListener('click', sendIntent);
+    
+    inputIntent.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendIntent();
+    });
     
     btnAuto.addEventListener('click', () => {
         if (autoInterval) {

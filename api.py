@@ -10,6 +10,10 @@ import random
 from core_physics.h7_wrapper import CKernelWrapper
 from h7_framework import SolverConfig, MetriplexVQESolver
 from metriplex_bridge import MetriplexEndianBridge
+from vertex_h7_bridge import VertexH7Bridge
+
+class IntentRequest(BaseModel):
+    prompt: str
 
 app = FastAPI(title="H7 QNN Experiment API")
 
@@ -136,6 +140,32 @@ def run_epoch():
         
     return get_metrics()
 
+@app.post("/api/intent")
+def set_intent(req: IntentRequest):
+    bridge = VertexH7Bridge()
+    try:
+        # Pide a Gemini que interprete la intención a rho y v
+        intent_data = bridge._get_physical_intent(req.prompt)
+        
+        # Mapeo: 
+        # v (velocidad) influye en el learning rate: [-1, 1] -> [0.01, 0.1]
+        # rho (densidad) influye en epsilon (regularización): [0, 1] -> [1e-4, 1e-2]
+        
+        v = intent_data.get('v', 0.5)
+        rho = intent_data.get('rho', 0.5)
+        reasoning = intent_data.get('reasoning', 'Sin razonamiento')
+        
+        # Ajustar los parámetros físicos del sistema en vivo
+        state.config.learning_rate = 0.05 + (v * 0.05)
+        state.config.base_epsilon = 1e-4 + (rho * 1e-2)
+        
+        # Guardar en log
+        state.logs.append(f"[VERTEX] Intent: v={v:.2f}, rho={rho:.2f} -> {reasoning[:30]}...")
+        
+        return {"rho": rho, "v": v, "reasoning": reasoning}
+    except Exception as e:
+        return {"error": str(e)}
+
 @app.get("/api/metrics")
 def get_metrics():
     return {
@@ -158,5 +188,15 @@ def get_metrics():
 
 if __name__ == "__main__":
     import uvicorn
-    # Start the server on port 8000
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    import socket
+    
+    def find_free_port(start_port=8000, max_port=8020):
+        for port in range(start_port, max_port):
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                if s.connect_ex(('0.0.0.0', port)) != 0:
+                    return port
+        return 8000
+
+    port = find_free_port()
+    print(f"Starting H7 Metriplectic Dashboard on port {port}")
+    uvicorn.run(app, host="0.0.0.0", port=port)
