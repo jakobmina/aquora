@@ -239,3 +239,91 @@ def run_covariance_deduction(statevector, qc_demo, probability):
             print(f"{key:.<40} {val:.6f}")
         else:
             print(f"{key:.<40} {val}")
+
+def quantum_to_covariance_inverse(probabilities, n_qubits=3, alpha=1.0):
+    """
+    Recupera la Matriz de Precisión (Σ⁻¹) desde probabilidades de medición cuántica.
+    Implementa el Tensor de Torsión (m_n = -m_{7-n}) para estados n=1..6
+    y extrae dependencias condicionales puras (Isomorfismo Métrica-Información).
+    
+    Args:
+        probabilities: dict o list/array de tamaño 2^n_qubits.
+        n_qubits: Número de qubits (por defecto 3).
+        alpha: Factor de acoplamiento de la torsión quiral.
+        
+    Returns:
+        precision_matrix (np.ndarray): Matriz de Precisión (Σ⁻¹) de n_qubits x n_qubits.
+    """
+    import numpy as np
+    
+    n_states = 2**n_qubits
+    
+    # Normalizar entrada a diccionario de probabilidades
+    if isinstance(probabilities, dict):
+        prob_dict = {int(k, 2) if isinstance(k, str) else k: float(v) for k, v in probabilities.items()}
+    else:
+        prob_dict = {i: float(probabilities[i]) for i in range(len(probabilities))}
+        
+    # Asegurar que todas las llaves existan
+    for i in range(n_states):
+        if i not in prob_dict:
+            prob_dict[i] = 0.0
+            
+    # Tensor de Torsión m_n = -m_{7-n}
+    # Solo aplicable para estados intermedios (1 a 6) en 3 qubits
+    m = np.zeros(n_states)
+    if n_qubits == 3:
+        # m_1 = -m_6
+        # m_2 = -m_5
+        # m_3 = -m_4
+        # Determinamos m_n basado en la asimetría real observada de probabilidades:
+        # m_n = (P(n) - P(7-n)) / (P(n) + P(7-n) + 1e-10)
+        for n in range(1, 4):
+            asymmetry = (prob_dict[n] - prob_dict[7-n]) / (prob_dict[n] + prob_dict[7-n] + 1e-10)
+            m[n] = asymmetry
+            m[7-n] = -asymmetry
+            
+    # Matriz de estados binarios (características X_n)
+    X = np.zeros((n_states, n_qubits))
+    for i in range(n_states):
+        binary = format(i, f'0{n_qubits}b')
+        X[i] = [int(b) for b in binary]
+        
+    # Calcular Expectativas
+    E_q = np.zeros(n_qubits)
+    E_qq = np.zeros((n_qubits, n_qubits))
+    
+    # Factor de modulación topológica (Torsión)
+    # mod_factor = P(n) * (1 + alpha * m_n)
+    mod_factor = np.zeros(n_states)
+    for n in range(n_states):
+        # Aseguramos positividad estricta para evitar métricas degeneradas
+        mod_factor[n] = max(0.0, prob_dict[n] * (1.0 + alpha * m[n]))
+        
+    # Normalizar mod_factor para que sume 1 como "pseudo-probabilidad"
+    total_mod = np.sum(mod_factor)
+    if total_mod > 1e-10:
+        mod_factor /= total_mod
+        
+    for i in range(n_qubits):
+        E_q[i] = np.sum(mod_factor * X[:, i])
+        for j in range(n_qubits):
+            E_qq[i, j] = np.sum(mod_factor * X[:, i] * X[:, j])
+            
+    # Matriz de Covarianza Ponderada (Σ)
+    Sigma = np.zeros((n_qubits, n_qubits))
+    for i in range(n_qubits):
+        for j in range(n_qubits):
+            Sigma[i, j] = E_qq[i, j] - E_q[i] * E_q[j]
+            
+    # Inversión Topológica: Matriz de Precisión (Σ⁻¹)
+    # Usamos pseudo-inversa (pinv) para cumplir la Regla 1.3 (evitar singularidades)
+    # y opcionalmente sumamos un factor ínfimo (Tikhonov) para estabilidad
+    epsilon = 1e-8
+    precision_matrix = np.linalg.pinv(Sigma + epsilon * np.eye(n_qubits))
+    
+    # Filtro de ruido para extraer la estructura pura
+    precision_matrix[np.abs(precision_matrix) < 1e-6] = 0.0
+    
+    return precision_matrix
+
