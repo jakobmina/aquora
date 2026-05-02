@@ -155,12 +155,24 @@ def set_intent(req: IntentRequest):
         rho = intent_data.get('rho', 0.5)
         reasoning = intent_data.get('reasoning', 'Sin razonamiento')
         
+        # --- FILTRO ANTISUMERGENCIA (Metriplectic Guard) ---
+        # Calculamos el Lagrangiano Informacional proyectado
+        l_i_symp, l_i_metr = bridge.compute_informational_lagrangian(rho, v)
+        
+        # Si el ratio es demasiado bajo (v >> rho), el sistema se "sumerge" en ruido.
+        # Forzamos un piso de regularización basado en la velocidad para mantener la quiralidad.
+        safe_rho = max(rho, abs(v) * 0.362) 
+        if safe_rho > rho:
+            state.logs.append(f"[GUARD] Ajustando rho {rho:.2f} -> {safe_rho:.2f} para evitar sumergencia.")
+            rho = safe_rho
+
         # Ajustar los parámetros físicos del sistema en vivo
         state.config.learning_rate = 0.05 + (v * 0.05)
         state.config.base_epsilon = 1e-4 + (rho * 1e-2)
         
         # Guardar en log
-        state.logs.append(f"[VERTEX] Intent: v={v:.2f}, rho={rho:.2f} -> {reasoning[:30]}...")
+        state.logs.append(f"[VERTEX] L_info: H={l_i_symp:.3f}, S={l_i_metr:.3f}")
+        state.logs.append(f"[VERTEX] Intent: v={v:.2f}, rho={rho:.2f}")
         
         return {"rho": rho, "v": v, "reasoning": reasoning}
     except Exception as e:
