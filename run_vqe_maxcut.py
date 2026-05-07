@@ -446,7 +446,7 @@ class MetriplecticMaxCut:
             "q_L_symp"       : round(q_L_symp,    8),
             "q_L_metr"       : round(q_L_metr,    8),
             "chirality"      : round(chirality,   8),
-            "is_non_abelian" : quat_report["is_non_abelian"],
+"is_non_abelian" : quat_report["is_non_abelian"],
             "norm_qLE"       : round(quat_report["norm_LE"], 8),
             "norm_qBE"       : round(quat_report["norm_BE"], 8),
             # Vacuum Overlaps (W_pair = O(n) + O(7-n))

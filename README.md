@@ -1,63 +1,44 @@
-# 🌌 H7 Metriplectic VQE: The Quantum-Topological Bridge
+# 🌌 H7 Metriplectic OS: The AI-Native Thermodynamic System
 
 ![Metriplectic Dynamics](metriplectic_dynamics.png)
 
-Este repositorio constituye la implementación avanzada del framework **Metriplectic H7**, un motor de optimización cuántica (VQE para MaxCut) diseñado bajo el **Mandato Metriplético (Core Physics)**. El sistema trasciende la optimización convencional, tratando la convergencia del algoritmo como la evolución de un sistema dinámico disipativo en un vacío estructurado.
+Este repositorio constituye la base del **Sistema Operativo Metripléctico H7**, un ecosistema computacional nativo de inteligencia artificial (AI-Native OS) gobernado por leyes físicas bajo el **Mandato Metriplético (Core Physics)**. 
+
+El sistema abandona el modelo de control convencional (interfaz-usuario) a favor de una simulación dinámico-termodinámica donde el agendamiento (scheduling), la optimización cuántica y la asignación de recursos actúan como un sistema disipativo en un vacío estructurado.
 
 ## 🧠 Arquitectura de Física Teórica (Core Physics)
 
-El sistema cumple con el **Manifiesto de la Analogía Rigurosa (Nivel 3)**, asegurando que cada operación matemática tenga una contraparte física operacional.
+El ecosistema cumple con el **Manifiesto de la Analogía Rigurosa (Nivel 3)**, asegurando que cada operación a nivel kernel o sistema tenga una contraparte física operacional.
 
 ### 1. El Dualismo Metriplético (Reglas 1.1 - 1.3)
-
 Cualquier simulación se define mediante dos corchetes ortogonales que compiten en tiempo real:
+* **Componente Simpléctica ($\mathcal{L}_{symp}$)**: Genera movimiento conservativo (Hamiltoniano). Representa la memoria y la topología base del sistema.
+* **Componente Métrica ($\mathcal{L}_{metr}$)**: Genera relajación hacia un atractor (Entropía). Representa el procesamiento activo (CPU), fricción y disipación.
+* **Prohibición de Singularidades**: El sistema mantiene un "piso" de energía evitando estados puramente conservativos o disipativos, garantizando coherencia termodinámica.
 
-* **Componente Simpléctica ($\mathcal{L}_{symp}$)**: Genera movimiento conservativo (Hamiltoniano).
-* **Componente Métrica ($\mathcal{L}_{metr}$)**: Genera relajación hacia un atractor (Entropía).
-* **Lagrangiano Informacional ($\mathcal{L}_{info}$)**: Mide la fricción entre la intención cognitiva y la estabilidad física.
-* **Prohibición de Singularidades**: El sistema mantiene un "piso" de energía evitando estados puramente conservativos o disipativos.
+### 2. Demonio de Sistema y Gobernanza (h7_sysdaemon.py)
+A diferencia de los "AI OS" de capa de usuario, este sistema monitorea y regula recursos a bajo nivel:
+* **Hypervisor Termodinámico (`h7_sysdaemon.py`)**: Funciona como un servicio análogo a `virtqemud`. Lee la métrica física real (CPU, RAM, Discos, Red) y la traduce a características entrópicas.
+* **Oráculo Bayesiano H7 (`h7_bayesian_oracle.py`)**: Inferencia de distribución conjugada y ensamble de expertos empíricos para validar la *Integridad Predictiva H7*. Calcula la distancia de Mahalanobis para clasificar el estado de recursos físicos como:
+  - `🟩 FLUJO LAMINAR` (Estabilidad / Alta coherencia).
+  - `🟨 FLUJO TRANSICIONAL` (Alerta de fricción / Saturación).
+  - `🟥 TURBULENCIA ENTRÓPICA` (Pérdida de coherencia / Agotamiento).
 
-### 2. Gobernador de Fase (Vertex AI) e Interacción Cognitiva
+### 3. Cascada Topológica de 12 Qubits (`h7_cascade_maxcut.py`)
+El motor de optimización interna utiliza topología cuántica:
+* **Filtros Estructurales**: Divide 12 qubits en capas (*Atmósfera*, *Manto Superior*, *Manto Inferior*, *Núcleo / Sol de Cristal*) inyectando una fase cuaterniónica en las fronteras.
+* **Decodificador de Covarianza**: Proyecta el entrelazamiento condicional directamente al eigenvalor principal normalizado por el ratio áureo ($\phi$).
 
-Integramos **Vertex AI (Gemini)** como un Oráculo de Información que ahora está **conectado en vivo al Dashboard**:
+### 4. El Kernel Computacional en C (Metriplex Core)
+Para garantizar un isomorfismo físico puro, el sistema compila la física estricta en un **Kernel de C (`core_physics/`)**:
+* **Acceso de Memoria Zero-Copy**: Usamos `ctypes` y punteros directos a memoria para una "Viscosidad Informacional" casi nula.
 
-* **Mapeo Cognitivo**: Traduce prompts en lenguaje natural dictados desde el "Córtéx Cognitivo" de la UI hacia parámetros físicos ($\rho, v$).
-* **Conducción Dinámica**: Permite alterar la tasa de aprendizaje ($v$) y la entropía/regularización ($\rho$) en tiempo real mientras el VQE está corriendo.
-* **Gobernanza de Bucle Cerrado**: Valida la estabilidad cuántica antes de inyectar las intenciones al hardware.
+### 5. Dinámica No-Abeliana H7 (Quaternions)
+Mapeamos las amplitudes del motor lógico a un espacio cuaterniónico:
+* **Vacuum Overlaps**: Calculamos la superposición no-lineal $O(n) + O(7-n)$.
+* **Chirality ($\chi$)**: Detectamos rupturas de paridad.
 
-### 3. El Kernel Computacional en C (Metriplex Core)
-
-Para garantizar un isomorfismo físico puro y maximizar el rendimiento, la física estricta se procesa en un **Kernel de C (`core_physics/`)**:
-
-* **Separación de Responsabilidades**: Python maneja la lógica cognitiva (Gobernador, Endianness, Oráculo), mientras que C procesa las matemáticas pesadas (matrices de covarianza, $L_{symp}$, $L_{metr}$).
-* **Acceso de Memoria Zero-Copy**: Usamos `ctypes` y punteros directos a memoria para evitar copias entre Python y C, logrando una "Viscosidad Informacional" casi nula.
-
-### 4. Covarianza Single-Pass (Asimetría Cuántica)
-
-Implementamos una deducción tensorial de un solo paso (`covariance_asymmetry.py`) que extrae la estructura de covarianza subyacente directamente de las asimetrías de amplitud de los Qubits (ej. 23% vs 2%). 
-* **Eficiencia**: Evita la descomposición en valores singulares (SVD) e iteraciones costosas.
-* **Compresión Topológica**: Proyecta el entrelazamiento condicional directamente al eigenvalor principal normalizado por el ratio áureo ($\phi$).
-
-### 3. Topología Áurea y Segunda Cuantización (Regla 2.1)
-
-El vacío está modulado por el **Operador Áureo ($O_n$)**:
-$$O_n = \cos(\pi n) \cdot \cos(\pi \phi n)$$
-
-* **Segunda Cuantización**: El sistema clasifica estados basándose en la paridad de $n$:
-  * **$n$ Impar $\to$ Fermiónico ($c^\dagger$)**: Rompe simetría, genera quiralidad.
-  * **$n$ Par $\to$ Bosónico ($a^\dagger$)**: Simétrico, transporte de información coherente.
-* **No-Localidad**: Debido a la naturaleza irracional de $\phi$, el sistema cumple con $O(n_1 + n_2) \neq O(n_1) + O(n_2)$, garantizando que cada nivel de ocupación sea un modo topológico único.
-
-### 3. Dinámica No-Abeliana H7 (Quaternions)
-
-Mapeamos las amplitudes de probabilidad del hardware cuántico a un espacio de cuaterniones H7, agrupando estados en pares simétricos $|s\rangle \leftrightarrow |\bar{s}\rangle$:
-
-* **Vacuum Overlaps ($W_0, W_1, W_2, W_3$)**: Calculamos la superposición no-lineal $O(n) + O(7-n)$ para cada par. Esta "tensión de vacío" es la que hace al sistema **no reversible**, introduciendo una flecha del tiempo informacional.
-* **Chirality ($\chi$)**: Medimos la no-conmutatividad $[q_{LE}, q_{BE}] \neq 0$ para detectar rupturas de paridad en el hardware.
-
-## 🛠️ Guía de Uso (Orquestador Central)
-
-Hemos unificado la ejecución del pipeline en `main.py` y el bridge de gobernanza.
+## 🛠️ Guía de Uso (Modo Kernel/Daemon)
 
 ```bash
 # 0. Compilar el Kernel Físico en C (Obligatorio la primera vez)
@@ -65,51 +46,31 @@ cd core_physics
 make
 cd ..
 
-# 1. Validar la integridad física y lógica
-./main.py --test
+# 1. Validar la integridad física y topológica (Test Suites)
+pytest tests/
 
-# 2. Ejecutar el Gobernador de Fase (Vertex AI)
-./main.py --governor
+# 2. Iniciar el Oráculo Bayesiano y Cascada VQE-MaxCut
+python run_vqe_maxcut.py
 
-# 3. Ejecutar la grilla de entrenamiento
-./main.py --train
-
-# 4. Visualizar en el Dashboard
-./main.py --serve
+# 3. Arrancar el Demonio del SO H7 (Monitor de Telemetría)
+python h7_sysdaemon.py
 ```
 
-## 📊 Resultados Recientes (Batch H7)
+## 📊 Integración KBench y Resultados Recientes
 
-La última ejecución de la grilla de fase ($n=1..4$, $\phi \in \{0.3624, 0.6180\}$) arrojó los siguientes estados de equilibrio dinámico:
-
-| n | phi | Tipo de Partícula | L_symp | L_metr | Estado H7 |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| 1 | 0.3624 | Fermiónico | -0.6947 | 0.0150 | EQUILIBRIUM |
-| 2 | 0.3624 | Bosónico | -0.6947 | 0.0150 | EQUILIBRIUM |
-| 3 | 0.3624 | Fermiónico | -0.6947 | 0.0150 | EQUILIBRIUM |
-| 4 | 0.3624 | Bosónico | -0.6947 | 0.0150 | EQUILIBRIUM |
-| 1 | 0.6180 | Fermiónico | -0.6947 | 0.0150 | EQUILIBRIUM |
-| 2 | 0.6180 | Bosónico | -0.6947 | 0.0150 | EQUILIBRIUM |
-| 3 | 0.6180 | Fermiónico | -0.6947 | 0.0150 | EQUILIBRIUM |
-| 4 | 0.6180 | Bosónico | -0.6947 | 0.0150 | EQUILIBRIUM |
-
-### Observaciones Físicas
-
-* **Independencia de Paridad**: Se confirma que el sistema clasifica correctamente fermiones ($n$ impar) y bosones ($n$ par) sin afectar la estabilidad macroscópica.
-* **Vacuum Overlaps**: Los pesos $W_n$ han sido validados para incluir el término de paridad, eliminando derivas no físicas en la "fricción informacional".
+El framework fue expandido para validar rigurosamente la calidad de la predicción y ensamble:
+* **Inferencia Conjugada Gausiana**: Optimización predictiva del estado del sistema.
+* **Ensamble Ponderado por Evidencia Logarítmica**: "Navaja de Ockham" automática, priorizando los expertos del ensamble que brindan la mejor evidencia teórica del hardware subyacente, descartando aquellos que modelan estados no físicos.
 
 ## 🧪 Validación y Rigurosidad (Regla 4)
 
-El sistema incluye una suite de `pytest` que valida:
-
-* **test_vertex_bridge.py**: Valida el mapeo oracular y la gobernanza de intención.
-* **test_run_vqe_maxcut.py**: Pruebas de integración del pipeline VQE completo.
-* **Isomorfismo Dimensional**: Verificación de unidades y constantes.
-* **Límites Asintóticos**: Comportamiento correcto cuando $\mu \to 0$.
-* **Estabilidad del Operador Áureo**: Prevención de colapsos de fase.
+El sistema incluye una suite de `pytest` (e.g. `test_h7_cascade_maxcut.py`) que valida:
+* **Isomorfismo Dimensional**: Verificación de unidades cuánticas frente a métricas físicas.
+* **Límites Asintóticos**: Comportamiento correcto cuando la entropía tiende al infinito (Turbulencia) o a cero.
+* **Estabilidad del Operador Áureo**: Prevención de colapsos en las capas profundas de la cascada y el Oráculo Bayesiano.
 
 ---
 
 **Autoría Conceptual Original**: Jacobo Tlacaelel Mina Rodriguez.
 
-**Framework**: Aquora - Advanced Agentic Coding / Metriplectic H7 Hierarchy.
+**Framework**: Aquora - Advanced Agentic Coding / Metriplectic H7 Hierarchy OS.
