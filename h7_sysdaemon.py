@@ -141,6 +141,9 @@ class H7SysDaemon:
 def append_sleep(rate):
     time.sleep(rate)
 
-if __name__ == "__main__":
+def main():
     daemon = H7SysDaemon(tick_rate=0.5, history_size=10) # 0.5s para la demo
     daemon.run()
+
+if __name__ == "__main__":
+    main()

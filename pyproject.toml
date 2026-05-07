@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "h7-metriplectic-os"
+version = "0.1.0"
+description = "H7 Metriplectic OS - AI-Native Thermodynamic Governor Daemon"
+readme = "README.md"
+authors = [
+    { name = "Jacobo Tlacaelel Mina Rodriguez", email = "admin@aquora.io" }
+]
+license = { text = "MIT" }
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: No Input/Output (Daemon)",
+    "Intended Audience :: System Administrators",
+    "Intended Audience :: Science/Research",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: C",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Topic :: System :: Operating System Kernels",
+    "Topic :: System :: Systems Administration",
+]
+keywords = ["h7", "metriplectic", "daemon", "governor", "quantum", "thermodynamic", "ai-native", "os"]
+dependencies = [
+    "psutil>=5.9.0",
+    "numpy>=1.24.0",
+    "scipy>=1.10.0",
+    "pandas>=2.0.0",
+    "qiskit>=0.45.0",
+    "qiskit-optimization>=0.6.0",
+    "networkx>=3.0"
+]
+
+[project.scripts]
+h7-sysdaemon = "h7_sysdaemon:main"
+
+[project.urls]
+Homepage = "https://github.com/jakobmina/aquora"
+Documentation = "https://github.com/jakobmina/aquora/blob/main/README.md"
+Repository = "https://github.com/jakobmina/aquora.git"
