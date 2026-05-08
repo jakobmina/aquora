@@ -35,11 +35,19 @@ dependencies = [
     "qiskit-optimization>=0.6.0",
     "networkx>=3.0"
 ]
+requires-python = ">=3.10"
 
 [project.scripts]
-h7-sysdaemon = "h7_sysdaemon:main"
+h7-sysdaemon = "h7_metriplectic_os.h7_sysdaemon:main"
 
 [project.urls]
 Homepage = "https://github.com/jakobmina/aquora"
 Documentation = "https://github.com/jakobmina/aquora/blob/main/README.md"
 Repository = "https://github.com/jakobmina/aquora.git"
+"Bug Tracker" = "https://github.com/jakobmina/aquora/issues"
+
+[tool.setuptools]
+packages = ["h7_metriplectic_os"]
+
+[tool.setuptools.package-data]
+h7_metriplectic_os = ["py.typed"]
