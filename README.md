@@ -1,6 +1,6 @@
 # 🌌 H7 Metriplectic OS: The AI-Native Thermodynamic Kernel
 
-![Metriplectic Dynamics](metriplectic_dynamics.png)
+![Metriplectic Dynamics](metriplectic.png)
 
 This repository contains the foundation of the **H7 Metriplectic OS**, an AI-native computational ecosystem governed by physical laws under the **Metriplectic Mandate (Core Physics)**.
 
