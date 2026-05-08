@@ -1,7 +1,5 @@
 # 🌌 H7 Metriplectic OS: The AI-Native Thermodynamic Kernel
 
-![Metriplectic Dynamics](Metriplectic.png)
-
 This repository contains the foundation of the **H7 Metriplectic OS**, an AI-native computational ecosystem governed by physical laws under the **Metriplectic Mandate (Core Physics)**.
 
 Unlike conventional operating systems that rely on static, sequential scheduling and memory management, H7 OS treats the entire system as a thermodynamic simulation. It manages information density through the control of **Submersion** and **Phase Shifts**, aiming for a bare-metal implementation where resource allocation acts as a dissipative system in a structured vacuum.
@@ -77,6 +75,9 @@ The system includes a `pytest` suite (e.g., `test_h7_cascade_maxcut.py`) that va
 *   **Dimensional Isomorphism**: Verifying quantum units against physical metrics.
 *   **Asymptotic Limits**: Correct behavior when entropy tends to infinity (Turbulence) or zero.
 *   **Golden Operator Stability**: Preventing collapse in deep cascade layers and the Bayesian Oracle.
+  
+  ## maxcut graphic
+  ![Metriplectic Dynamics](Metriplectic.png)
 
 ---
 
