@@ -1,76 +1,85 @@
-# 🌌 H7 Metriplectic OS: The AI-Native Thermodynamic System
+# 🌌 H7 Metriplectic OS: The AI-Native Thermodynamic Kernel
 
 ![Metriplectic Dynamics](metriplectic_dynamics.png)
 
-Este repositorio constituye la base del **Sistema Operativo Metripléctico H7**, un ecosistema computacional nativo de inteligencia artificial (AI-Native OS) gobernado por leyes físicas bajo el **Mandato Metriplético (Core Physics)**. 
+This repository contains the foundation of the **H7 Metriplectic OS**, an AI-native computational ecosystem governed by physical laws under the **Metriplectic Mandate (Core Physics)**.
 
-El sistema abandona el modelo de control convencional (interfaz-usuario) a favor de una simulación dinámico-termodinámica donde el agendamiento (scheduling), la optimización cuántica y la asignación de recursos actúan como un sistema disipativo en un vacío estructurado.
+Unlike conventional operating systems that rely on static, sequential scheduling and memory management, H7 OS treats the entire system as a thermodynamic simulation. It manages information density through the control of **Submersion** and **Phase Shifts**, aiming for a bare-metal implementation where resource allocation acts as a dissipative system in a structured vacuum.
 
-## 🧠 Arquitectura de Física Teórica (Core Physics)
+## 🧠 Core Physics Architecture
 
-El ecosistema cumple con el **Manifiesto de la Analogía Rigurosa (Nivel 3)**, asegurando que cada operación a nivel kernel o sistema tenga una contraparte física operacional.
+The H7 ecosystem adheres to the **Manifesto of Rigorous Analogy (Level 3)**, ensuring that every kernel-level operation has a functional physical counterpart.
 
-### 1. El Dualismo Metriplético (Reglas 1.1 - 1.3)
-Cualquier simulación se define mediante dos corchetes ortogonales que compiten en tiempo real:
-* **Componente Simpléctica ($\mathcal{L}_{symp}$)**: Genera movimiento conservativo (Hamiltoniano). Representa la memoria y la topología base del sistema.
-* **Componente Métrica ($\mathcal{L}_{metr}$)**: Genera relajación hacia un atractor (Entropía). Representa el procesamiento activo (CPU), fricción y disipación.
-* **Prohibición de Singularidades**: El sistema mantiene un "piso" de energía evitando estados puramente conservativos o disipativos, garantizando coherencia termodinámica.
+### 1. The Metriplectic Mandate (Rules 1.1 - 1.3)
+The system's evolution is defined by two orthogonal brackets that compete in real-time:
+*   **Symplectic Component ($\mathcal{L}_{symp}$)**: Generates conservative, Hamiltonian motion. It represents the base topology and memory of the system, conserving entropy.
+*   **Metric Component ($\mathcal{L}_{metr}$)**: Generates relaxation towards an attractor. It represents active processing (CPU), friction, and structured dissipation.
+*   **Metriplectic Balance**: These rules are absolute architectural constraints at the compilation level. Breaking the balance between unitary evolution and structured dissipation destroys the system's physical integrity.
 
-### 2. Demonio de Sistema y Gobernanza (h7_sysdaemon.py)
-A diferencia de los "AI OS" de capa de usuario, este sistema monitorea y regula recursos a bajo nivel:
-* **Hypervisor Termodinámico (`h7_sysdaemon.py`)**: Funciona como un servicio análogo a `virtqemud`. Lee la métrica física real (CPU, RAM, Discos, Red) y la traduce a características entrópicas.
-* **Oráculo Bayesiano H7 (`h7_bayesian_oracle.py`)**: Inferencia de distribución conjugada y ensamble de expertos empíricos para validar la *Integridad Predictiva H7*. Calcula la distancia de Mahalanobis para clasificar el estado de recursos físicos como:
-  - `🟩 FLUJO LAMINAR` (Estabilidad / Alta coherencia).
-  - `🟨 FLUJO TRANSICIONAL` (Alerta de fricción / Saturación).
-  - `🟥 TURBULENCIA ENTRÓPICA` (Pérdida de coherencia / Agotamiento).
+### 2. The Golden Ratio Operator ($\hat{O}_n$)
+The system avoids planar vacuums and ensures quasiperiodicity through the irrationality of the Golden Ratio ($\phi \approx 1.618$). This is encapsulated in the fundamental operator:
 
-### 3. Cascada Topológica de 12 Qubits (`h7_cascade_maxcut.py`)
-El motor de optimización interna utiliza topología cuántica:
-* **Filtros Estructurales**: Divide 12 qubits en capas (*Atmósfera*, *Manto Superior*, *Manto Inferior*, *Núcleo / Sol de Cristal*) inyectando una fase cuaterniónica en las fronteras.
-* **Decodificador de Covarianza**: Proyecta el entrelazamiento condicional directamente al eigenvalor principal normalizado por el ratio áureo ($\phi$).
+$$\hat{O}_n = \cos(\pi n) \cos(\pi \phi n)$$
 
-### 4. El Kernel Computacional en C (Metriplex Core)
-Para garantizar un isomorfismo físico puro, el sistema compila la física estricta en un **Kernel de C (`core_physics/`)**:
-* **Acceso de Memoria Zero-Copy**: Usamos `ctypes` y punteros directos a memoria para una "Viscosidad Informacional" casi nula.
+This operator is used to modulate edges in the quantum cascade and prevent information collapse in deep layers. It is not a heuristic parameter but a mathematical guarantee of system stability.
 
-### 5. Dinámica No-Abeliana H7 (Quaternions)
-Mapeamos las amplitudes del motor lógico a un espacio cuaterniónico:
-* **Vacuum Overlaps**: Calculamos la superposición no-lineal $O(n) + O(7-n)$.
-* **Chirality ($\chi$)**: Detectamos rupturas de paridad.
+### 3. System Daemon & Governance (`h7_sysdaemon.py`)
+H7 OS functions as a **Thermodynamic Hypervisor**, monitoring and regulating resources at a low level:
+*   **Hardware Telemetry**: It reads real-time metrics (CPU, RAM, Disk, Net) and translates them into entropic characteristics.
+*   **H7 Bayesian Oracle (`h7_bayesian_oracle.py`)**: Uses conjugate Gaussian inference and an ensemble of 7 empirical experts (Z₇ space) to validate **H7 Predictive Integrity**. It classifies the system state as:
+    - `🟩 LAMINAR FLOW` (Stability / High Coherence)
+    - `🟨 TRANSITIONAL FLOW` (Friction Alert / Saturation)
+    - `🟥 ENTROPIC TURBULENCE` (Coherence Loss / Depletion)
 
-## 🛠️ Guía de Uso (Modo Kernel/Daemon)
+### 4. Topological Quantum Cascade (`h7_cascade_maxcut.py`)
+The internal optimization engine utilizes a 12-qubit topological cascade:
+*   **Quantum Decision Engine**: Rather than simple load simulation, the quantum component serves as the core decision-making motor and calculates covariance.
+*   **Structural Layers**: Divided into *Atmosphere*, *Upper Mantle*, *Lower Mantle*, and *Crystal Core*, injecting quaternionic phases at the boundaries.
+*   **Covariance Decoder**: Projects conditional entanglement directly to the principal eigenvalue, normalized by $\phi$.
+
+### 5. H7 Non-Abelian Dynamics (Quaternions)
+The logical motor amplitudes are mapped to a quaternionic space:
+*   **Vacuum Overlaps**: Calculation of non-linear superposition $O(n) + O(7-n)$.
+*   **Chirality ($\chi$)**: Detection of parity breaks.
+
+### 6. High-Performance C Kernel (Metriplex Core)
+To guarantee pure physical isomorphism, the strict physics are compiled into a **C Kernel (`core_physics/`)**:
+*   **Zero-Copy Memory Access**: Direct memory pointers via `ctypes` ensure near-zero "Informational Viscosity".
+*   **SIMD Optimization**: Uses AVX/NEON instructions for high-speed tensor and covariance matrix operations.
+
+## 🛠️ Usage Guide (Kernel/Daemon Mode)
 
 ```bash
-# 0. Compilar el Kernel Físico en C (Obligatorio la primera vez)
+# 0. Compile the Physical C Kernel (Required for first run)
 cd core_physics
 make
 cd ..
 
-# 1. Validar la integridad física y topológica (Test Suites)
+# 1. Validate Physical and Topological Integrity
 pytest tests/
 
-# 2. Iniciar el Oráculo Bayesiano y Cascada VQE-MaxCut
+# 2. Start the Bayesian Oracle and VQE-MaxCut Cascade
 python run_vqe_maxcut.py
 
-# 3. Arrancar el Demonio del SO H7 (Monitor de Telemetría)
+# 3. Launch the H7 OS Daemon (Telemetry Monitor)
 python h7_sysdaemon.py
 ```
 
-## 📊 Integración KBench y Resultados Recientes
+## 📊 KBench Integration & Recent Results
 
-El framework fue expandido para validar rigurosamente la calidad de la predicción y ensamble:
-* **Inferencia Conjugada Gausiana**: Optimización predictiva del estado del sistema.
-* **Ensamble Ponderado por Evidencia Logarítmica**: "Navaja de Ockham" automática, priorizando los expertos del ensamble que brindan la mejor evidencia teórica del hardware subyacente, descartando aquellos que modelan estados no físicos.
+The framework was expanded to rigorously validate prediction quality and ensemble performance:
+*   **Gaussian Conjugate Inference**: Predictive optimization of the system state.
+*   **Log-Evidence Weighted Ensemble**: Automatic "Occam's Razor", prioritizing ensemble experts that provide the best theoretical evidence of the underlying hardware, discarding those that model non-physical states.
 
-## 🧪 Validación y Rigurosidad (Regla 4)
+## 🧪 Validation & Rigorousness (Rule 4)
 
-El sistema incluye una suite de `pytest` (e.g. `test_h7_cascade_maxcut.py`) que valida:
-* **Isomorfismo Dimensional**: Verificación de unidades cuánticas frente a métricas físicas.
-* **Límites Asintóticos**: Comportamiento correcto cuando la entropía tiende al infinito (Turbulencia) o a cero.
-* **Estabilidad del Operador Áureo**: Prevención de colapsos en las capas profundas de la cascada y el Oráculo Bayesiano.
+The system includes a `pytest` suite (e.g., `test_h7_cascade_maxcut.py`) that validates:
+*   **Dimensional Isomorphism**: Verifying quantum units against physical metrics.
+*   **Asymptotic Limits**: Correct behavior when entropy tends to infinity (Turbulence) or zero.
+*   **Golden Operator Stability**: Preventing collapse in deep cascade layers and the Bayesian Oracle.
 
 ---
 
-**Autoría Conceptual Original**: Jacobo Tlacaelel Mina Rodriguez.
+**Original Conceptual Authorship**: Jacobo Tlacaelel Mina Rodriguez.
 
 **Framework**: Aquora - Advanced Agentic Coding / Metriplectic H7 Hierarchy OS.
