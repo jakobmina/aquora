@@ -12,7 +12,7 @@ import psutil
 import pandas as pd
 import numpy as np
 from datetime import datetime
-from h7_bayesian_oracle import H7BayesianOracle, φ
+from .h7_bayesian_oracle import H7BayesianOracle, φ
 
 class H7SysDaemon:
     def __init__(self, tick_rate=1.0, history_size=20):

@@ -2,7 +2,7 @@ import pytest
 import json
 from unittest.mock import MagicMock, patch
 import numpy as np
-from vertex_h7_bridge import VertexH7Bridge
+from h7_metriplectic_os.vertex_h7_bridge import VertexH7Bridge
 
 @pytest.fixture
 def mock_bridge():

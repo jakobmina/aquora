@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 from qiskit import QuantumCircuit
-from h7_cascade_qiskit import CascadaH7Qiskit, QuantumCovarianceDecoder12Q
+from h7_metriplectic_os.h7_cascade_qiskit import CascadaH7Qiskit, QuantumCovarianceDecoder12Q
 
 def test_circuit_creation():
     """Prueba que el circuito de 12 qubits se cree correctamente."""

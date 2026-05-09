@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from h7_cascade_maxcut import build_h7_cascade_graph, ejecutar_maxcut_h7
+from h7_metriplectic_os.h7_cascade_maxcut import build_h7_cascade_graph, ejecutar_maxcut_h7
 
 def test_graph_creation():
     """Prueba que el grafo MaxCut de la cascada se cree correctamente."""

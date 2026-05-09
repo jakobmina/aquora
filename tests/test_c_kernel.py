@@ -2,7 +2,7 @@ import pytest
 import numpy as np
 import math
 
-from metriplex_bridge import MetriplexCKernel
+from h7_metriplectic_os.metriplex_bridge import MetriplexCKernel
 
 @pytest.fixture
 def kernel():

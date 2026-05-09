@@ -4,7 +4,7 @@ import numpy as np
 import vertexai
 from vertexai.generative_models import GenerativeModel, GenerationConfig
 from run_vqe_maxcut import MetriplecticMaxCut
-from h7_quaternion import H7QuaternionMapper, H7_AMPLITUDES
+from .h7_quaternion import H7QuaternionMapper, H7_AMPLITUDES
 
 class VertexH7Bridge:
     def __init__(self, project_id="cuasiperiodico", location="us-central1"):

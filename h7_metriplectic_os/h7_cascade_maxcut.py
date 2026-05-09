@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 from scipy.sparse.linalg import eigsh
 
 # Re-usar el decodificador de la implementación anterior
-from h7_cascade_qiskit import QuantumCovarianceDecoder12Q, graficar_matriz_covarianza
+from .h7_cascade_qiskit import QuantumCovarianceDecoder12Q, graficar_matriz_covarianza
 
 # Constantes H7
 PHI = (1 + np.sqrt(5)) / 2

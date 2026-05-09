@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from h7_framework import (
+from h7_metriplectic_os.h7_framework import (
     MetriplexVQESolver,
     SolverConfig,
     OptimizationMode,

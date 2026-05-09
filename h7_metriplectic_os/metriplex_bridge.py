@@ -2,8 +2,8 @@ import math
 import numpy as np
 from typing import Tuple, Dict, Optional
 
-from h_logic import MetriplexOracle, MetriplexConfig, H7Conservation, FockBasis, FockConfig
-from endian import TopologicalBigEndianEncoder, BigEndianHexadecimalEncoder
+from .h_logic import MetriplexOracle, MetriplexConfig, H7Conservation, FockBasis, FockConfig
+from .endian import TopologicalBigEndianEncoder, BigEndianHexadecimalEncoder
 
 PHI: float = (1.0 + (math.sqrt(5.0))) / 2.0
 PI: float = math.pi

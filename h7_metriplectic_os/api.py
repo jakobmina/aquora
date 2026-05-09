@@ -8,9 +8,9 @@ import random
 
 # Import our custom kernel wrapper and H7 framework
 from core_physics.h7_wrapper import CKernelWrapper
-from h7_framework import SolverConfig, MetriplexVQESolver
-from metriplex_bridge import MetriplexEndianBridge
-from vertex_h7_bridge import VertexH7Bridge
+from .h7_framework import SolverConfig, MetriplexVQESolver
+from .metriplex_bridge import MetriplexEndianBridge
+from .vertex_h7_bridge import VertexH7Bridge
 
 class IntentRequest(BaseModel):
     prompt: str

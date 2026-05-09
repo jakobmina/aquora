@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 from qiskit.quantum_info import Statevector
-from h7_framework import (
+from h7_metriplectic_os.h7_framework import (
     run_quantum_experiment,
     interpret_measured_bitstring,
     QuaternionMetrics,

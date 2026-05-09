@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from utf8_exp3 import encode_char, decode_char, encode_string, decode_string
+from h7_metriplectic_os.utf8_exp3 import encode_char, decode_char, encode_string, decode_string
 
 def test_antagonist_pairs():
     """Verify that 'a' and 'A' generate conjugate properties."""

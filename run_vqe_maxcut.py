@@ -20,7 +20,7 @@ import datetime
 import math
 import numpy as np
 import matplotlib.pyplot as plt
-from h7_quaternion import (
+from h7_metriplectic_os.h7_quaternion import (
     H7QuaternionMapper,
     H7_AMPLITUDES,
     compute_lagrangian_quaternion,

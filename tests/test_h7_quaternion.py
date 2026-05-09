@@ -22,7 +22,7 @@ import os
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from h7_quaternion import (
+from h7_metriplectic_os.h7_quaternion import (
     H7_AMPLITUDES,
     H7_AMPLITUDES_MIRROR,
     H7_PAIR_LABELS,

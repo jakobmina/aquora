@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from covariance_asymmetry import quantum_to_covariance_inverse
+from h7_metriplectic_os.covariance_asymmetry import quantum_to_covariance_inverse
 
 def test_quantum_to_covariance_inverse_uniform():
     """Test with uniform distribution. Torsion should be 0, Precision should be uniform/diagonal."""

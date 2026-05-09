@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 from core_physics.h7_wrapper import CKernelWrapper
-from h7_framework import QuaternionMetrics
+from h7_metriplectic_os.h7_framework import QuaternionMetrics
 
 def test_kernel_normalization():
     q = np.array([3.0, 4.0, 0.0, 0.0])

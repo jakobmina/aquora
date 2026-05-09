@@ -2,8 +2,8 @@ import pytest
 import numpy as np
 import math
 from run_vqe_maxcut import MetriplecticMaxCut
-from h7_quaternion import compute_h7_pair_overlaps, H7QuaternionMapper, H7_AMPLITUDES
-from metriplex_bridge import MetriplexEndianBridge, golden_operator
+from h7_metriplectic_os.h7_quaternion import compute_h7_pair_overlaps, H7QuaternionMapper, H7_AMPLITUDES
+from h7_metriplectic_os.metriplex_bridge import MetriplexEndianBridge, golden_operator
 
 def test_parity_classification_logic():
     """
