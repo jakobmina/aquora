@@ -22,22 +22,42 @@ from h7_classifier_prototype import H7Classifier
 from h7_bayesian_oracle import run_extraction_pipeline, O_n
 import matplotlib.pyplot as plt
 
-def h7_pulse():
-    """Emite un 'pulso' computacional: una rotación áurea intensa."""
-    start = time.perf_counter_ns()
-    # Micro-kernel H7: rotaciones anidadas
-    x = 1.0
-    for i in range(1000):
-        x = math.cos(x * O_n(i))
-    end = time.perf_counter_ns()
-    return end - start
+def h7_quantum_pulse(n_qubits: int = 3):
+    """
+    Simula un pulso cuántico donde el jitter del sistema modula la fase.
+    Cada 'latido' provoca un colapso de información en la asimetría.
+    """
+    # 1. Capturar el 'ruido' ambiental (el jitter)
+    t1 = time.perf_counter_ns()
+    time.sleep(0.0001)
+    t2 = time.perf_counter_ns()
+    jitter = (t2 - t1) % 1000 / 1000.0  # Normalizado 0-1
+    
+    # 2. El 'Circuito': Superposición modulada por el jitter
+    # En un sistema real, esto sería un Job en q3as
+    n_states = 2**n_qubits
+    phi = 2 * np.pi * jitter  # Fase inducida por el hardware
+    
+    # Generar amplitudes con asimetría cuántica
+    # La fase PHI interfiere con la base H7 (Golden Ratio)
+    theta = np.linspace(0, 2*np.pi, n_states)
+    amplitudes = np.cos(theta + phi) + 1j * np.sin(theta * 1.618)
+    probabilities = np.abs(amplitudes)**2
+    probabilities /= np.sum(probabilities)  # Normalización (Colapso)
+    
+    # 3. Extraer la Asimetría (La Distancia Implícita)
+    # A = P_max - P_min
+    asymmetry = np.max(probabilities) - np.min(probabilities)
+    
+    return asymmetry, probabilities
 
 def collect_radar_echoes(n_pulses: int = 200):
     """Recolecta los ecos del radar (latencia del sistema)."""
     print(f"📡 Emitiendo {n_pulses} pulsos de radar al sistema...")
     echoes = []
     for _ in range(n_pulses):
-        echoes.append(h7_pulse())
+        asym, _ = h7_quantum_pulse()
+        echoes.append(asym)
         # Pequeño jitter aleatorio de espera para no saturar el scheduler
         time.sleep(0.001)
     
@@ -115,8 +135,10 @@ def run_quantum_radar():
     plt.legend()
     plt.grid(True)
     
-    plt.savefig("h7_quantum_radar_echoes.png")
-    print("\n📈 Visualización del Radar guardada: h7_quantum_radar_echoes.png")
+    import os
+    os.makedirs("h7_outputs", exist_ok=True)
+    plt.savefig("h7_outputs/h7_quantum_radar_echoes.png")
+    print("\n📈 Visualización del Radar guardada: h7_outputs/h7_quantum_radar_echoes.png")
     print("="*70)
 
 if __name__ == "__main__":

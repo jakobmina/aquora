@@ -38,12 +38,17 @@ def main():
     parser.add_argument("--serve", action="store_true", help="Start the Dashboard API (FastAPI)")
     parser.add_argument("--test", action="store_true", help="Run the full test suite (Physics + Bridge)")
     parser.add_argument("--governor", action="store_true", help="Run the Phase Governor (Vertex AI Bridge)")
-    parser.add_argument("--all", action="store_true", help="Run tests, governor, then train, then serve")
+    parser.add_argument("--os", action="store_true", help="Launch the H7 Metriplectic OS (Radar + Auto-Governor)")
+    parser.add_argument("--daemon", action="store_true", help="Run OS in infinite loop for systemd service")
+    parser.add_argument("--kernel", action="store_true", help="Train the H7 OS Kernel (Quantum Entropy Training)")
+    parser.add_argument("--radar", action="store_true", help="Run the H7 Quantum Radar scan")
+    parser.add_argument("--all", action="store_true", help="Run everything in sequence")
 
     args = parser.parse_args()
 
     # Default to help if no args
-    if not any([args.train, args.serve, args.test, args.governor, args.all]):
+    valid_args = [args.train, args.serve, args.test, args.governor, args.os, args.daemon, args.kernel, args.radar, args.all]
+    if not any(valid_args):
         parser.print_help()
         return
 
@@ -81,7 +86,31 @@ def main():
             "Generating H7 Metriplectic Submission Grid"
         )
 
-    # 4. Serve Dashboard
+    # 4. H7 Metriplectic OS (Real-time Regulation)
+    if args.os or args.daemon or args.all:
+        cmd = [sys.executable, "h7_auto_governor.py"]
+        if args.daemon: cmd.append("--daemon")
+        
+        run_command(
+            cmd,
+            "Activating H7 Metriplectic OS (Quantum Radar + Auto-Governor)"
+        )
+
+    # 5. OS Kernel Training
+    if args.kernel:
+        run_command(
+            [sys.executable, "h7_os_kernel_training.py"],
+            "Training H7 OS Kernel with Quantum Entropy"
+        )
+
+    # 6. Quantum Radar Scan
+    if args.radar:
+        run_command(
+            [sys.executable, "h7_quantum_radar.py"],
+            "Executing H7 Quantum Radar Environment Scan"
+        )
+
+    # 7. Serve Dashboard
     if args.serve or args.all:
         run_command(
             [sys.executable, "api.py"],

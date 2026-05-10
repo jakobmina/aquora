@@ -260,7 +260,9 @@ def run_h7_cascade(
 
     # 6. Guardar JSON
     if save_json:
-        fname = f"h7_cascade_{n_qubits}q_{datetime.datetime.utcnow().strftime('%Y%m%dT%H%M%S')}.json"
+        import os
+        os.makedirs("h7_outputs", exist_ok=True)
+        fname = f"h7_outputs/h7_cascade_{n_qubits}q_{datetime.datetime.utcnow().strftime('%Y%m%dT%H%M%S')}.json"
         with open(fname, "w") as f:
             json.dump(record, f, indent=2)
         print(f"\n💾 Registro guardado → {fname}")

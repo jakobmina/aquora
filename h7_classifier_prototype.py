@@ -152,8 +152,10 @@ def run_prototype():
     plt.title("Integridad del OS")
     plt.legend(); plt.grid(True)
     
-    plt.savefig("h7_classifier_results.png")
-    print("\n📈 Resultados guardados en: h7_classifier_results.png")
+    import os
+    os.makedirs("h7_outputs", exist_ok=True)
+    plt.savefig("h7_outputs/h7_classifier_results.png")
+    print("\n📈 Resultados guardados en: h7_outputs/h7_classifier_results.png")
     print("="*70)
 
 if __name__ == "__main__":

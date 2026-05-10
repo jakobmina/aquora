@@ -166,7 +166,7 @@ class H7BayesianOracle:
 # FUNCIONES DE INTEGRACIÓN
 # ============================================================
 
-def run_extraction_pipeline(job_name: str, credentials_path: str = "credentials.json", cache_file: str = "h7_quantum_entropy.json"):
+def run_extraction_pipeline(job_name: str, credentials_path: str = "credentials.json", cache_file: str = "h7_outputs/h7_quantum_entropy.json"):
     """
     Pipeline completo con Persistencia:
     1. Intenta recuperar de cache local.

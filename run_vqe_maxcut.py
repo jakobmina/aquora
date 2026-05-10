@@ -320,9 +320,11 @@ class MetriplecticMaxCut:
             text.set_color("white")
 
         plt.tight_layout()
-        plt.savefig("metriplectic_dynamics.png", bbox_inches="tight", dpi=140)
+        import os
+        os.makedirs("h7_outputs", exist_ok=True)
+        plt.savefig("h7_outputs/metriplectic_dynamics.png", bbox_inches="tight", dpi=140)
         plt.close()
-        print("  Dynamics saved → metriplectic_dynamics.png")
+        print("  Dynamics saved → h7_outputs/metriplectic_dynamics.png")
 
     # --------------------------------------------------- full pipeline --------
     def export_submission_csv(
@@ -482,7 +484,7 @@ def run_maxcut(
     phi_param: float = 0.3624,
     credentials_path: str = "credentials.json",
     export_csv: bool = False,
-    csv_path: str = "submission.csv",
+    csv_path: str = "h7_outputs/submission.csv",
 ) -> dict:
     """
     Default MaxCut run using the H7 Hamiltonian edge set.

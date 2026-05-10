@@ -119,8 +119,10 @@ def train_os_kernel():
     plt.grid(True)
     
     plt.tight_layout()
-    plt.savefig("h7_kernel_training_report.png")
-    print("\n📈 Reporte visual guardado: h7_kernel_training_report.png")
+    import os
+    os.makedirs("h7_outputs", exist_ok=True)
+    plt.savefig("h7_outputs/h7_kernel_training_report.png")
+    print("\n📈 Reporte visual guardado: h7_outputs/h7_kernel_training_report.png")
 
 if __name__ == "__main__":
     train_os_kernel()

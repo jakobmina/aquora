@@ -17,100 +17,116 @@ Autoría Conceptual Original: Jacobo Tlacaelel Mina Rodriguez.
 import numpy as np
 import time
 import math
-from h7_quantum_radar import h7_pulse, collect_radar_echoes
+from h7_quantum_radar import h7_quantum_pulse
 from h7_classifier_prototype import H7Classifier
 from h7_bayesian_oracle import run_extraction_pipeline, O_n
 import matplotlib.pyplot as plt
 
+import signal
+import sys
+
 class H7AutoGovernor:
     def __init__(self, bitstream: str, n_features: int = 10):
         self.detector = H7Classifier(n_features, bitstream)
-        self.load_factor = 1.0  # El parámetro a regular (1.0 = 100% throughput)
-        self.history = []
+        self.load_factor = 1.0
+        self.asymmetry_history = []
         self.n_features = n_features
+        self.running = True
 
-    def regulate(self, echo_window: np.ndarray):
-        """Ajusta el load_factor basado en la coherencia detectada."""
-        # Predecir probabilidad de coherencia (Laminosidad)
-        X = echo_window.reshape(1, -1)
+    def stop(self, *args):
+        print("\n🛑 Recibida señal de parada. Guardando estado metripléctico...")
+        self.running = False
+
+    def regulate(self, asym_window: np.ndarray):
+        """
+        Regulación Basada en el Colapso de Asimetría.
+        'Un solo movimiento' para reconciliar la métrica con la probabilidad.
+        """
+        # 1. Distancia Implícita en Covarianza
+        # Analizamos cómo varía la asimetría (el 'gap' entre estados)
+        asym_dist = np.var(asym_window) 
+        
+        # 2. Predicción de Laminosidad (H7 Classifier)
+        X = asym_window.reshape(1, -1)
         laminarity = self.detector.predict_proba(X)[0]
         
-        # Lógica de Gobernanza Metripléctica:
-        # Si laminarity > 0.6 -> El sistema está sano -> Podemos subir carga
-        # Si laminarity < 0.4 -> El sistema está turbulento -> Debemos bajar carga
+        # 3. Movimiento Único de Gobernanza
+        # El objetivo es mantener la asimetría cerca de PHI/2 (~0.8)
+        # Si asym_dist sube (jitter cuántico), bajamos la carga.
+        current_asym = asym_window[-1]
         
-        target_load = laminarity * 1.5 # El factor áureo de carga
+        # Fórmula Metripléctica: [u, S] + {u, H}
+        # S (Disipación): Basada en la pérdida de asimetría
+        # H (Conservación): Basada en la laminosidad detectada
+        damping = (1.0 - current_asym) * 0.5
+        drive = laminarity * 1.618
         
-        # Suavizado (damping metripléctico)
-        alpha = 0.2
+        target_load = drive - damping
+        
+        # Suavizado y límites (Regla 1.3)
+        alpha = 0.25
         self.load_factor = (1 - alpha) * self.load_factor + alpha * target_load
-        
-        # Límites de seguridad (Regla 1.3)
-        self.load_factor = np.clip(self.load_factor, 0.1, 2.0)
+        self.load_factor = np.clip(self.load_factor, 0.05, 2.0)
         
         return laminarity, self.load_factor
 
-def run_governor_live(cycles: int = 40):
+def run_governor_live(cycles: int = -1):
     print("="*70)
-    print("  H7 AUTO-GOVERNOR — Thermodynamic Closed-Loop Control")
+    print("  H7 AUTO-GOVERNOR — Quantum Collapse Mode")
+    print("  Mode: " + ("DAEMON" if cycles == -1 else "DEMO"))
     print("="*70)
 
-    # 1. Cargar Prior Cuántico (20Q)
     job_id = "which-pink-counter"
     ext = run_extraction_pipeline(job_id)
     if not ext: return
     
     governor = H7AutoGovernor(ext["bits"])
     n_feat = governor.n_features
+    
+    signal.signal(signal.SIGTERM, governor.stop)
+    signal.signal(signal.SIGINT, governor.stop)
 
-    print(f"\n🧠 Gobernador inicializado. Load Factor inicial: {governor.load_factor}")
-    print("🔄 Iniciando ciclo de regulación en tiempo real...")
-    
     reg_history = []
-    
-    for i in range(cycles):
-        # Capturar ventana de radar (10 ecos)
-        echoes = []
+    i = 0
+    while governor.running:
+        if cycles != -1 and i >= cycles: break
+        
+        # Capturar ventana de ASIMETRÍAS (Colapsos Cuánticos)
+        asym_echoes = []
         for _ in range(n_feat):
-            echoes.append(h7_pulse())
-            time.sleep(0.005) # Simular carga variable
+            asym, _ = h7_quantum_pulse()
+            asym_echoes.append(asym)
+            time.sleep(0.005)
         
-        # Normalizar ventana
-        echo_window = np.array(echoes, dtype=float)
-        echo_window = (echo_window - np.mean(echo_window)) / (np.std(echo_window) + 1e-12)
+        asym_window = np.array(asym_echoes, dtype=float)
         
-        # Regulación
-        lam, load = governor.regulate(echo_window)
+        # Regulación por 'Movimiento Único'
+        lam, load = governor.regulate(asym_window)
         reg_history.append((lam, load))
         
-        # Visual de consola
-        bar_len = int(load * 20)
-        bar = "█" * bar_len + "░" * (40 - bar_len)
-        status = "LAMINAR" if lam > 0.5 else "TURBULENTO"
-        print(f"Cycle {i+1:02d} | {status:<10} | Lam: {lam:.3f} | Load: {load:.3f} | [{bar}]")
+        if i % 5 == 0:
+            status = "LAMINAR" if lam > 0.5 else "TURBULENTO"
+            gap = asym_window[-1]
+            print(f"[OS:{i:05d}] {status} | Gap Cuántico: {gap:.4f} | Load: {load:.3f}")
         
-        # Simular interferencia externa cada 15 ciclos
-        if i % 15 == 0 and i > 0:
-            print("⚠️ [SISTEMA] Inyectando Interferencia de Red...")
-            time.sleep(0.1) # Causar jitter masivo
-
-    # 5. Visualización del Bucle Cerrado
-    plt.figure(figsize=(10, 6))
-    plt.subplot(2, 1, 1)
-    plt.plot([h[0] for h in reg_history], 'g-', label='Laminosidad (Radar)')
-    plt.axhline(y=0.5, color='gray', linestyle='--')
-    plt.title("Feedback del Radar Cuántico")
-    plt.legend(); plt.grid(True)
-    
-    plt.subplot(2, 1, 2)
-    plt.plot([h[1] for h in reg_history], 'b-', label='Load Factor (Regulación)')
-    plt.title("Gobernador Metripléctico: Ajuste de Carga")
-    plt.legend(); plt.grid(True)
-    
-    plt.tight_layout()
-    plt.savefig("h7_auto_governor_loop.png")
-    print("\n📈 Bucle de regulación guardado: h7_auto_governor_loop.png")
-    print("="*70)
+        i += 1
+        
+    if cycles != -1:
+        import os
+        os.makedirs("h7_outputs", exist_ok=True)
+        plt.figure(figsize=(10, 6))
+        plt.subplot(2, 1, 1); plt.plot([h[0] for h in reg_history], 'g-', label='Laminosidad')
+        plt.subplot(2, 1, 2); plt.plot([h[1] for h in reg_history], 'b-', label='Load Factor')
+        plt.savefig("h7_outputs/h7_auto_governor_loop.png")
+        print(f"\n📈 Reporte guardado en: h7_outputs/h7_auto_governor_loop.png")
 
 if __name__ == "__main__":
-    run_governor_live()
+    import sys
+    mode = -1 if '--daemon' in sys.argv else 40
+    run_governor_live(mode)
+
+if __name__ == "__main__":
+    import sys
+    # Si se pasa '--daemon', corre infinito
+    mode = -1 if '--daemon' in sys.argv else 40
+    run_governor_live(mode)
