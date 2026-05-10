@@ -166,29 +166,37 @@ class H7BayesianOracle:
 # FUNCIONES DE INTEGRACIÓN
 # ============================================================
 
-def run_extraction_pipeline(job_name: str, credentials_path: str = "credentials.json"):
+def run_extraction_pipeline(job_name: str, credentials_path: str = "credentials.json", cache_file: str = "h7_quantum_entropy.json"):
     """
-    Pipeline completo:
-    1. Recupera job de q3as.
-    2. Extrae bits de entropía.
-    3. Calcula integridad H7.
+    Pipeline completo con Persistencia:
+    1. Intenta recuperar de cache local.
+    2. Si no hay cache o falla, intenta q3as.
+    3. Si q3as falla, usa el cache como fallback.
     """
     print(f"\n🚀 Iniciando Extractor de Bits H7 para Job: {job_name}")
     print("="*60)
     
+    # Intentar cargar de cache primero para velocidad
+    try:
+        with open(cache_file, 'r') as f:
+            cached_data = json.load(f)
+            if cached_data.get("job_name") == job_name:
+                print(f"📦 [CACHE] Recuperados {len(cached_data['bits'])} bits de entropía local.")
+                return cached_data
+    except:
+        pass
+
     try:
         client = Client(Credentials.load(credentials_path))
         job = client.get_job(job_name)
         result = job.result()
         
-        # En q3as, los counts suelen estar en result.meas_counts o result.sampled
         counts = getattr(result, "meas_counts", {})
         if not counts:
             counts = getattr(result, "sampled", {})
             
         if not counts:
-            print("⚠ No se encontraron counts (meas_counts/sampled) en el resultado.")
-            return None
+            raise ValueError("No se encontraron counts en el resultado.")
             
         n_qubits = len(list(counts.keys())[0])
         extractor = H7BitExtractor(n_qubits)
@@ -197,22 +205,29 @@ def run_extraction_pipeline(job_name: str, credentials_path: str = "credentials.
         bits = extractor.extract()
         metrics = extractor.compute_asymmetry_metrics()
         
-        print(f"\n📊 Métricas de Asimetría (Entropía Cuántica):")
-        for k, v in metrics.items():
-            print(f"  {k:<20}: {v}")
-            
-        print(f"\n🔑 Bits Extraídos (primeros 64): {bits[:64]}...")
-        print(f"  Longitud total: {len(bits)} bits")
-        
-        return {
+        # Guardar en Cache
+        payload = {
+            "job_name": job_name,
             "bits": bits,
             "metrics": metrics,
             "n_qubits": n_qubits
         }
+        with open(cache_file, 'w') as f:
+            json.dump(payload, f)
+            
+        print(f"✅ Bits extraídos y persistidos en {cache_file}.")
+        return payload
         
     except Exception as e:
-        print(f"❌ Error en el pipeline: {e}")
-        return None
+        print(f"❌ Error en el pipeline (Cloud): {e}")
+        # FALLBACK FINAL
+        try:
+            with open(cache_file, 'r') as f:
+                print("⚠️ Usando FALLBACK de entropía persistida...")
+                return json.load(f)
+        except:
+            print("💀 No hay cache disponible. Fallo total.")
+            return None
 
 if __name__ == "__main__":
     # Test local con datos simulados si no hay job activo
