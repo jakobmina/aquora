@@ -1,0 +1,57 @@
+# H7 Metriplectic OS - Kernel Interface Manifest
+# ============================================
+# Define los puntos de contacto entre el Daemon de Gobernanza y el Kernel Linux.
+
+system:
+  name: "H7 Metriplectic OS"
+  governance_mode: "Closed-Loop"
+  integrity_threshold: 0.618  # Proporción Áurea (Phi^-1)
+
+sensors:
+  cpu_telemetry:
+    path: "/proc/stat"
+    mechanism: "psutil/procfs"
+    metrics: ["user", "system", "idle", "iowait"]
+  
+  memory_stability:
+    path: "/proc/meminfo"
+    psi_path: "/proc/pressure/memory"
+    metrics: ["MemAvailable", "SwapTotal", "PSI_some_avg10"]
+
+  io_flow:
+    path: "/proc/diskstats"
+    per_process: "/proc/[pid]/io"
+    metrics: ["read_bytes", "write_bytes", "io_delay"]
+
+actuators:
+  scheduler:
+    api: "sched_setattr / sched_setscheduler"
+    policies:
+      conservative: "SCHED_BATCH"
+      realtime: "SCHED_RR"
+      emergency: "SCHED_DEADLINE"
+    
+  topology_control:
+    api: "sched_setaffinity"
+    dynamic_masking: true  # Permite mover procesos entre Performance/Efficiency cores
+
+  io_prioritization:
+    api: "ioprio_set"
+    classes:
+      high: 1  # Real-time
+      standard: 2 # Best-effort
+      background: 3 # Idle
+
+  resource_isolation:
+    path: "/sys/fs/cgroup"
+    version: "v2"
+    controllers: ["cpu", "memory", "io"]
+
+observability:
+  kernel_events:
+    mechanism: "eBPF"
+    hook_points: ["sched_switch", "block_rq_insert"]
+  
+  tracing:
+    path: "/sys/kernel/debug/tracing"
+    mode: "tracefs"

@@ -132,13 +132,34 @@ class H7BayesianOracle:
     Gobierna el sistema usando inferencia bayesiana.
     Utiliza el posterior para validar la integridad del OS.
     """
-    def __init__(self, n_features: int):
+    def __init__(self, n_features: int = 2):
         self.n = n_features
         self.mu_prior = np.zeros(n_features)
         self.sigma_prior = np.eye(n_features)
         self.mu_post = np.zeros(n_features)
         self.sigma_post = np.eye(n_features)
         
+    def predict_integrity(self, cpu: float, pressure: float) -> Dict:
+        """
+        Predice el estado de integridad del sistema basado en telemetría.
+        Mapea el espacio físico (CPU/RAM) al espacio de estabilidad H7.
+        """
+        # Normalizar inputs 0.0 - 1.0
+        x = np.array([cpu / 100.0, pressure / 100.0])
+        
+        # En un sistema real, usaríamos get_integrity con Mahalanobis.
+        # Para esta implementación, usamos una función de respuesta metripléctica.
+        # I = exp(- (x_cpu^2 + x_pressure^2) / (2 * O_n_integrity))
+        dist_sq = np.sum(x**2)
+        integrity = math.exp(-dist_sq / (2.0 * O_n_integrity))
+        
+        return {
+            "integrity": integrity,
+            "status": "LAMINAR" if integrity > 0.6 else "TURBULENT",
+            "cpu_norm": x[0],
+            "pressure_norm": x[1]
+        }
+
     def update(self, X: np.ndarray, y: np.ndarray, sigma2: float = 0.1):
         """Update bayesiano con cierre conjugado."""
         N = X.shape[0]

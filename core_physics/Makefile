@@ -5,7 +5,7 @@ LDFLAGS = -shared -lm
 TARGET_LIB = libmetriplex_core.so
 TARGET_DAEMON = ../h7_daemon
 
-SOURCES = metriplex_core.c
+SOURCES = metriplex_core.c h7_actuator.c
 OBJECTS = $(SOURCES:.c=.o)
 
 all: $(TARGET_LIB) $(TARGET_DAEMON)

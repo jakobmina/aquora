@@ -16,27 +16,50 @@ The system's evolution is defined by two orthogonal brackets that compete in rea
 * **Metric Component ($\mathcal{L}_{metr}$)**: Generates relaxation towards an attractor. It represents active processing (CPU), friction, and structured dissipation.
 * **Metriplectic Balance**: These rules are absolute architectural constraints at the compilation level. Breaking the balance between unitary evolution and structured dissipation destroys the system's physical integrity.
 
-### 2. The Golden Ratio Operator ($\hat{O}_n$)
+## 🚀 Guía de Operación y Despliegue H7
 
-The system avoids planar vacuums and ensures quasiperiodicity through the irrationality of the Golden Ratio ($\phi \approx 1.618$). This is encapsulated in the fundamental operator:
+Sigue estos pasos para activar la gobernanza metripléctica en tu sistema Linux.
 
-$$\hat{O}_n = \cos(\pi n) \cos(\pi \phi n)$$
+### 1. Requisitos Previos
 
-This operator is used to modulate edges in the quantum cascade and prevent information collapse in deep layers. It is not a heuristic parameter but a mathematical guarantee of system stability.
+* **Sistema**: Linux (Kernel 5.8+ recomendado para soporte PSI).
+* **Herramientas**: `gcc`, `make`, `python3.10+`.
+* **Librerías**: `pip install psutil pyyaml psycopg2-binary qiskit numpy`.
 
-### 3. System Daemon & Governance (`h7_sysdaemon.py`)
-H7 OS functions as a **Thermodynamic Hypervisor**, monitoring and regulating resources at a low level:
-*   **Hardware Telemetry**: It reads real-time metrics (CPU, RAM, Disk, Net) and translates them into entropic characteristics.
-*   **H7 Bayesian Oracle (`h7_bayesian_oracle.py`)**: Uses conjugate Gaussian inference and an ensemble of 7 empirical experts (Z₇ space) to validate **H7 Predictive Integrity**. It classifies the system state as:
-    - `🟩 LAMINAR FLOW` (Stability / High Coherence)
-    - `🟨 TRANSITIONAL FLOW` (Friction Alert / Saturation)
-    - `🟥 ENTROPIC TURBULENCE` (Coherence Loss / Depletion)
+### 2. Compilación del Actuador (C-Core)
 
-### 4. Tiered Topological Cascade (Lite to Sovereign)
-The internal optimization engine is now multi-tier, allowing the OS to scale its "level of consciousness" based on mission criticality:
-*   **Sovereign Tier (80Q)**: Full 10-block deployment. Maximum entropy extraction and predictive resolution.
-*   **Standard Tier (20Q)**: Balanced 4-block architecture. Optimal for daily task orchestration.
-*   **Lite Tier (12Q)**: Ultra-low latency 2-block mode. Minimal resource footprint for background maintenance.
+El actuador de bajo nivel debe compilarse para interactuar con las syscalls del kernel:
+
+```bash
+cd core_physics
+make clean && make
+```
+
+Esto generará `libmetriplex_core.so` y el binario `../h7_daemon`.
+
+### 3. Configuración del Entorno
+
+1. **Credenciales**: Configura tu `.env` con la `DATABASE_URL` de Neon para persistencia en la nube.
+2. **Interfaz del Kernel**: Revisa `h7_kernel_interface.yaml`. Aquí puedes ajustar el `integrity_threshold` (default: 0.618).
+
+### 4. Ejecución de la Cascada Cuántica
+Inicia el procesamiento de tareas según el tier de qubits deseado:
+```bash
+# Opciones: --tier lite (12Q), standard (20Q), sovereign (80Q)
+python3 h7_cascade_execution.py --tier sovereign
+```
+
+### 5. Activación del Gobernador Inteligente (Loop Cerrado)
+En una terminal separada, arranca el cerebro del sistema:
+```bash
+export PYTHONPATH=$PYTHONPATH:.
+python3 kernel/h7_intelligent_governor.py
+```
+El gobernador comenzará a leer la telemetría real y a aplicar correcciones de afinidad y prioridad si la integridad cae por debajo del umbral.
+
+### 6. Monitoreo y Auditoría
+* **Local**: Revisa la carpeta `h7_outputs/` para ver los resultados del VQE y logs de integridad.
+* **Cloud**: Accede a tu consola de Neon DB para consultar la tabla `h7_tasks` y verificar la validez de las firmas hexadecimales (ADN del sistema).
 
 ### 5. Task Orchestration & Cloud Persistence (Neon DB)
 H7 OS implements a **Post-Quantum Governance Ledger** via Neon Postgres:
