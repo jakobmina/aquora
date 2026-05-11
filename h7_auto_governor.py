@@ -76,8 +76,8 @@ def run_governor_live(cycles: int = -1):
     print("  Mode: " + ("DAEMON" if cycles == -1 else "DEMO"))
     print("="*70)
 
-    job_id = "which-pink-counter"
-    ext = run_extraction_pipeline(job_id)
+    DEFAULT_JOB_ID = "sim_h7_80q"
+    ext = run_extraction_pipeline(DEFAULT_JOB_ID)
     if not ext: return
     
     governor = H7AutoGovernor(ext["bits"])
@@ -121,12 +121,23 @@ def run_governor_live(cycles: int = -1):
         print(f"\n📈 Reporte guardado en: h7_outputs/h7_auto_governor_loop.png")
 
 if __name__ == "__main__":
-    import sys
-    mode = -1 if '--daemon' in sys.argv else 40
-    run_governor_live(mode)
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--daemon", action="store_true")
+    parser.add_argument("--cycles", type=int, default=40)
+    args = parser.parse_args()
+    
+    # Intentar cargar el último Job ID activo (80Q)
+    try:
+        if os.path.exists("h7_outputs/active_80q_job.txt"):
+            with open("h7_outputs/active_80q_job.txt", "r") as f:
+                active_job = f.read().strip()
+                # Sobrescribir el job por defecto para el run_governor_live
+                import h7_auto_governor
+                h7_auto_governor.DEFAULT_JOB_ID = active_job
+                print(f"🔗 Sincronizado con Job 80Q: {active_job}")
+    except:
+        pass
 
-if __name__ == "__main__":
-    import sys
-    # Si se pasa '--daemon', corre infinito
-    mode = -1 if '--daemon' in sys.argv else 40
+    mode = -1 if args.daemon else args.cycles
     run_governor_live(mode)

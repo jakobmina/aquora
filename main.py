@@ -42,6 +42,7 @@ def main():
     parser.add_argument("--daemon", action="store_true", help="Run OS in infinite loop for systemd service")
     parser.add_argument("--kernel", action="store_true", help="Train the H7 OS Kernel (Quantum Entropy Training)")
     parser.add_argument("--radar", action="store_true", help="Run the H7 Quantum Radar scan")
+    parser.add_argument("--cycles", type=int, default=-1, help="Limit number of cycles for the governor/daemon")
     parser.add_argument("--all", action="store_true", help="Run everything in sequence")
 
     args = parser.parse_args()
@@ -90,6 +91,8 @@ def main():
     if args.os or args.daemon or args.all:
         cmd = [sys.executable, "h7_auto_governor.py"]
         if args.daemon: cmd.append("--daemon")
+        if args.cycles > 0:
+            cmd.extend(["--cycles", str(args.cycles)])
         
         run_command(
             cmd,

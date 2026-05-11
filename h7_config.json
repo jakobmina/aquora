@@ -1,0 +1,8 @@
+{
+    "neon_project_id": "ep-green-tooth-ap8mz1yk",
+    "neon_db_url": "https://ep-green-tooth-ap8mz1yk.apirest.c-7.us-east-1.aws.neon.tech/neondb/rest/v1",
+    "h7_governance": {
+        "min_integrity_to_process": 0.3623,
+        "max_load_factor": 2.0
+    }
+}

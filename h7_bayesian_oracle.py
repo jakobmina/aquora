@@ -21,7 +21,12 @@ import json
 from dataclasses import dataclass
 from typing import Dict, List, Tuple, Optional
 from scipy.linalg import inv
-from q3as import Client, Credentials
+try:
+    from q3as import Client, Credentials
+    HAS_Q3AS = True
+except ImportError:
+    HAS_Q3AS = False
+    print("[INFO] q3as no detectado. Operando en modo de Simulación Local H7.")
 
 # ============================================================
 # CONSTANTES H7
@@ -187,6 +192,9 @@ def run_extraction_pipeline(job_name: str, credentials_path: str = "credentials.
         pass
 
     try:
+        if not HAS_Q3AS:
+            raise ImportError("q3as no disponible")
+
         client = Client(Credentials.load(credentials_path))
         job = client.get_job(job_name)
         result = job.result()
@@ -202,13 +210,20 @@ def run_extraction_pipeline(job_name: str, credentials_path: str = "credentials.
         extractor = H7BitExtractor(n_qubits)
         extractor.ingest_counts(counts)
         
+        from h7_metriplectic_os.endian import H7Cascade80QEncoder
+        
         bits = extractor.extract()
         metrics = extractor.compute_asymmetry_metrics()
         
-        # Guardar en Cache
+        # Generar Firma Topológica Hexadecimal (ADN del Sistema)
+        integrity_score = metrics.get("h7_entropy", 0.0) * 10.0 # Escalamos para el encoder
+        hex_signature = H7Cascade80QEncoder.pack_80q_state(bits, integrity_score)
+        
+        # Guardar en Cache con la firma topológica
         payload = {
             "job_name": job_name,
             "bits": bits,
+            "hex_signature": hex_signature,
             "metrics": metrics,
             "n_qubits": n_qubits
         }
@@ -220,11 +235,20 @@ def run_extraction_pipeline(job_name: str, credentials_path: str = "credentials.
         
     except Exception as e:
         print(f"❌ Error en el pipeline (Cloud): {e}")
-        # FALLBACK FINAL
+        # FALLBACK FINAL con Regeneración de Firma
         try:
             with open(cache_file, 'r') as f:
+                data = json.load(f)
                 print("⚠️ Usando FALLBACK de entropía persistida...")
-                return json.load(f)
+                
+                # Regenerar firma si falta
+                if "hex_signature" not in data:
+                    from h7_metriplectic_os.endian import H7Cascade80QEncoder
+                    bits = data.get("bits", "0"*80)
+                    metrics = data.get("metrics", {"h7_entropy": 0.5})
+                    data["hex_signature"] = H7Cascade80QEncoder.pack_80q_state(bits, metrics.get("h7_entropy", 0.5) * 10)
+                
+                return data
         except:
             print("💀 No hay cache disponible. Fallo total.")
             return None

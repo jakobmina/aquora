@@ -104,3 +104,38 @@ class TopologicalBigEndianEncoder:
             'discrete_phase_fragment': discrete_phase_fragment,
             'cycle_phase_derived': cycle_phase_derived,
         }
+
+class H7Cascade80QEncoder:
+    """
+    Encoder especializado para la Cascada de 80 Qubits.
+    Empaqueta el estado de los 10 bloques (80 bits) en un bloque uint128
+    con metadatos de integridad metripléctica.
+    """
+    @staticmethod
+    def pack_80q_state(bit_string: str, integrity_ratio: float) -> str:
+        # 1. Convertir 80 bits a entero
+        # Aseguramos que el bitstream tenga 80 bits exactos (Regla de paridad)
+        bits_clean = bit_string.replace(" ", "")[:80].ljust(80, '0')
+        data_val = int(bits_clean, 2)
+        
+        # 2. Codificar integridad (16 bits)
+        # Normalizamos ratio 0-100 a uint16
+        integ_val = int(min(max(integrity_ratio, 0), 100) * 655.35)
+        
+        # 3. Ensamblar uint128: [48 bits Reserved | 16 bits Integrity | 80 bits Data]
+        final_val = (integ_val << 80) | data_val
+        
+        return BigEndianHexadecimalEncoder.to_hex_uint128(final_val)
+
+    @staticmethod
+    def unpack_80q_state(hex_str: str) -> Dict:
+        val = int(hex_str, 16)
+        data_bits = bin(val & ((1 << 80) - 1))[2:].zfill(80)
+        integ_val = (val >> 80) & 0xFFFF
+        integrity_ratio = integ_val / 655.35
+        
+        return {
+            "bitstream": data_bits,
+            "integrity_ratio": integrity_ratio,
+            "blocks_active": 10
+        }

@@ -15,6 +15,7 @@ Autoría Conceptual Original: Jacobo Tlacaelel Mina Rodriguez.
 import numpy as np
 import math
 import json
+import os
 from h7_bayesian_oracle import run_extraction_pipeline, H7BayesianOracle
 from h7_qnn_bridge import H7QNNBridge, run_h7_qnn_pipeline
 from scipy.linalg import inv
@@ -37,8 +38,13 @@ def train_os_kernel():
     print("  H7 OS KERNEL TRAINING — Quantum Entropy Integration")
     print("="*70)
 
-    # 1. Extracción de bits reales (20Q)
-    job_id = "which-pink-counter"
+    # 1. Extracción de bits reales (Sincronizado con 80Q)
+    job_id = "sim_h7_80q"
+    if os.path.exists("h7_outputs/active_80q_job.txt"):
+        with open("h7_outputs/active_80q_job.txt", "r") as f:
+            job_id = f.read().strip()
+            
+    print(f"📡 Usando entropía del Job: {job_id}")
     extraction = run_extraction_pipeline(job_id)
     if not extraction:
         print("❌ Error: No se pudo obtener entropía del job.")
@@ -119,7 +125,6 @@ def train_os_kernel():
     plt.grid(True)
     
     plt.tight_layout()
-    import os
     os.makedirs("h7_outputs", exist_ok=True)
     plt.savefig("h7_outputs/h7_kernel_training_report.png")
     print("\n📈 Reporte visual guardado: h7_outputs/h7_kernel_training_report.png")
