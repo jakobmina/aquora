@@ -1,0 +1,7 @@
+{
+    "config": "10x8_bits",
+    "total_bits": 80,
+    "asymmetry": 0.236,
+    "entropy_quality": "HIGH",
+    "status": "VALIDATED"
+}
