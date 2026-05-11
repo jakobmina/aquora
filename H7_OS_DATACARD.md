@@ -39,9 +39,22 @@ Para garantizar la correcta ejecución del Gobernador y del Kernel, el OS base s
 2. **Librerías del Sistema**: `build-essential`, `python3-dev`.
 3. **Paquetes Python (Virtual Environment)**:
    - `psutil` (Crítico para la telemetría del daemon).
+   - `psycopg2-binary` (Persistencia nativa en Neon DB).
    - `numpy`, `scipy`, `pandas` (Operaciones bayesianas e inferencia).
    - `qiskit`, `qiskit-optimization` (Topología estructural y Ansatz VQE).
    - `networkx` (Topología de grafos).
+
+---
+
+## 4. Gobernanza en la Nube & Persistencia (Neon DB)
+
+H7 OS integra un esquema de persistencia asíncrona para garantizar la inmutabilidad de las decisiones del kernel:
+
+- **Connection Pooler**: Utiliza el host `-pooler` de Neon para manejar ráfagas de telemetría sin agotar las conexiones del backend.
+- **Esquema de Datos**:
+  - `h7_tasks`: Registro de tareas autorizadas con firma hexadecimal.
+  - `h7_logs`: Telemetría de integridad, gap termodinámico y factor de carga.
+- **Seguridad**: Las credenciales se gestionan vía variables de entorno (`DATABASE_URL`) con soporte obligatorio para `sslmode=require`.
 
 ---
 

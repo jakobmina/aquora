@@ -32,11 +32,17 @@ H7 OS functions as a **Thermodynamic Hypervisor**, monitoring and regulating res
     - `🟨 TRANSITIONAL FLOW` (Friction Alert / Saturation)
     - `🟥 ENTROPIC TURBULENCE` (Coherence Loss / Depletion)
 
-### 4. Topological Quantum Cascade (80Q Cascade)
-The internal optimization engine utilizes a scalable **80-qubit topological cascade** (10 blocks x 8 qubits):
-*   **H7-80Q Architecture**: Organized in 10 layers (Atmosphere to Dirac Sea) for high-density entropy extraction.
-*   **Local High-Fidelity Simulator**: Integrated bridge to bypass hardware queues while maintaining physical parity via Lagrangian-driven probability collapse.
-*   **Structural Layers**: Divided into *Exosphere*, *Troposphere*, *Mantle*, *Nucleus*, *Quantum Kernel*, and *Dirac Sea*.
+### 4. Tiered Topological Cascade (Lite to Sovereign)
+The internal optimization engine is now multi-tier, allowing the OS to scale its "level of consciousness" based on mission criticality:
+*   **Sovereign Tier (80Q)**: Full 10-block deployment. Maximum entropy extraction and predictive resolution.
+*   **Standard Tier (20Q)**: Balanced 4-block architecture. Optimal for daily task orchestration.
+*   **Lite Tier (12Q)**: Ultra-low latency 2-block mode. Minimal resource footprint for background maintenance.
+
+### 5. Task Orchestration & Cloud Persistence (Neon DB)
+H7 OS implements a **Post-Quantum Governance Ledger** via Neon Postgres:
+*   **Neon Integration**: Uses a native `psycopg2` bridge via Connection Pooler for high-speed state persistence.
+*   **Hexadecimal State-Signing**: Every task authorized by the OS is signed with a 128-bit topological signature (`uint128` ADN) generated from the quantum cascade.
+*   **Immutable Audit Log**: Governance events and task history are stored in `h7_tasks` and `h7_logs` for long-term kernel training.
 
 ### 5. H7 Non-Abelian Dynamics (Quaternions & Torsion)
 The logical motor amplitudes are mapped to a quaternionic space to handle high-dimensional state vectors without singularities.
@@ -47,20 +53,20 @@ To guarantee pure physical isomorphism and real-time response, the governance is
 *   **Zero-Copy Memory Access**: Direct memory pointers via `ctypes` ensure near-zero "Informational Viscosity".
 *   **Metriplex Core**: Standalone C library for SU(2) and Lagrangian dynamics.
 
-## 🛠️ Usage Guide (Kernel/Daemon Mode)
+## 🛠️ Usage Guide (Governance & Tiers)
 
 ```bash
 # 0. Compile the Physical C Kernel and Daemon
 make -C core_physics/
 
-# 1. Validate 80Q Topological Integrity
-python h7_80q_execution.py
+# 1. Execute H7 Governance with Tiers (lite, standard, or sovereign)
+python3 h7_cascade_execution.py --tier lite
 
 # 2. Launch the High-Performance C-Daemon (Native Governance)
 ./h7_daemon
 
-# 3. Train the OS Kernel with 80-bit Entropy
-python main.py --kernel
+# 3. Monitor Cloud Persistence (Neon DB)
+# Tasks and logs are automatically synced to your Neon dashboard.
 ```
 
 # 🏆 Milestones
