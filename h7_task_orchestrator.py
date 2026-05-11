@@ -23,6 +23,7 @@ class H7TaskOrchestrator:
         with open(config_path, "r") as f:
             self.config = json.load(f)
         self.db = H7DatabaseConnector(config_path)
+        self.db.auto_setup_tables() # Asegurar infraestructura
         self.queue = []
         self.running_tasks = []
 
@@ -35,21 +36,30 @@ class H7TaskOrchestrator:
         })
         print(f"➕ Tarea añadida a la cola: {name}")
 
-    def get_system_integrity(self):
-        # En un sistema real, esto consulta la SHM del C-Daemon o el Oracle
-        # Para el prototipo, simulamos una lectura de integridad
-        # (Idealmente leeríamos un archivo 'h7_outputs/current_integrity.txt')
-        if os.path.exists("h7_outputs/h7_cascade_80q_latest.json"):
-             with open("h7_outputs/h7_cascade_80q_latest.json", "r") as f:
-                 data = json.load(f)
-                 return data.get("ratio", 0.0) / 100.0 # Normalizado
-        return 0.5 # Default estable
+    def check_integrity(self):
+        """Lee el último estado H7 y valida si es seguro ejecutar tareas."""
+        try:
+            with open("h7_outputs/h7_cascade_80q_latest.json", "r") as f:
+                state = json.load(f)
+            
+            # Mapeo de integridad desde las métricas de la firma
+            metrics = state.get("metrics", {})
+            integrity = metrics.get("h7_entropy", 0.0)
+            
+            # Normalización (si > 1, es estable)
+            self.current_signature = state.get("hex_signature", "UNKNOWN")
+            
+            if integrity > self.config.get("min_integrity", 0.3623):
+                return True, integrity
+            return False, integrity
+        except Exception:
+            return False, 0.0
 
     def run_step(self):
-        integrity = self.get_system_integrity()
+        is_stable, integrity = self.check_integrity()
         threshold = self.config["h7_governance"]["min_integrity_to_process"]
 
-        if integrity < threshold:
+        if not is_stable:
             print(f"⚠️ [TURBULENCIA] Integridad ({integrity:.4f}) < Umbral ({threshold}). Pausando orquestador.")
             return
 
